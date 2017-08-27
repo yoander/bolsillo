@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <style>
+        /*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 3.5rem tall */
+body {
+  padding-top: 3.5rem;
+}
+
+/*
+ * Typography
+ */
+
+h1 {
+  margin-bottom: 20px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Sidebar
+ */
+
+.sidebar {
+  position: fixed;
+  top: 51px;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  border-right: 1px solid #eee;
+}
+
+/* Sidebar navigation */
+.sidebar {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sidebar .nav {
+  margin-bottom: 20px;
+}
+
+.sidebar .nav-item {
+  width: 100%;
+}
+
+.sidebar .nav-item + .nav-item {
+  margin-left: 0;
+}
+
+.sidebar .nav-link {
+  border-radius: 0;
+}
+
+/*
+ * Dashboard
+ */
+
+ /* Placeholders */
+.placeholders {
+  padding-bottom: 3rem;
+}
+
+.placeholder img {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+        </style>
+  </head>
+  <body>
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+          <a class="navbar-brand" href="#">Dashboard</a> <button aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler d-lg-none" data-target="#navbarsExampleDefault" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
+          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item active">
+                <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Settings</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Help</a>
+              </li>
+            </ul>
+            <form class="form-inline mt-2 mt-md-0">
+              <input aria-label="Search" class="form-control mr-sm-2" placeholder="Search" type="text"> <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+          </div>
+        </nav>
+        <div class="container-fluid">
+          <div class="row">
+            <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+              <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                  <a class="nav-link active" href="#">Overview <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Reports</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Analytics</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Export</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Nav item</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Nav item again</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">One more nav</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Another nav item</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Nav item again</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">One more nav</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Another nav item</a>
+                </li>
+              </ul>
+            </nav>
+            <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
+              <div>
+                <a class="btn btn-link d-md-none d-sm-none p-0" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
+                </a>
+              </div>
+              <div class="collapse" id="collapseExample">
+                <!--<div class="card card-body d-md-none d-sm-none p-0">-->
+                    <nav class="d-md-none d-sm-none p-0 bg-light">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                          <a class="nav-link active" href="#">Overview <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Analytics</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Export</a>
+                        </li>
+                      </ul>
+                      <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Nav item</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Nav item again</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">One more nav</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Another nav item</a>
+                        </li>
+                      </ul>
+                      <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Nav item again</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">One more nav</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="#">Another nav item</a>
+                        </li>
+                      </ul>
+                <!--</div>-->
+                    </nav>
+              </div>
+              <h1>Dashboard</h1>
+              <section class="row text-center placeholders">
+                <div class="col-6 col-sm-3 placeholder">
+                  <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" width="200">
+                  <h4>Label</h4>
+                  <div class="text-muted">
+                    Something else
+                  </div>
+                </div>
+                <div class="col-6 col-sm-3 placeholder">
+                  <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" width="200">
+                  <h4>Label</h4><span class="text-muted">Something else</span>
+                </div>
+                <div class="col-6 col-sm-3 placeholder">
+                  <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" width="200">
+                  <h4>Label</h4><span class="text-muted">Something else</span>
+                </div>
+                <div class="col-6 col-sm-3 placeholder">
+                  <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" width="200">
+                  <h4>Label</h4><span class="text-muted">Something else</span>
+                </div>
+              </section>
+              <h2>Section title</h2>
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Description</th>
+                      <th>Type</th>
+                      <th>Total Price</th>
+                      <th>Tags</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for tx in Transactions %}
+                      <tr>
+                        <td>{{ forloop.Counter }}</td> 
+                        <td>{{ tx.Description.String }}</td>
+                        <td>{{ tx.Type }}</td>
+                        <td>{{ tx.TotalPrice }}</td>
+                        <td>
+                          {% with tx.R.Tags|length as len %}
+                            {% for t in tx.R.Tags %}
+                              {% if not forloop.Last %}
+                                {{ t.Tag }},
+                              {% else %}
+                                {{ t.Tag }}
+                              {% endif %}
+                            {% endfor %}
+                          {% endwith %}
+                        </td>
+                        <td></td>
+                      </tr>  
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </main>
+          </div>
+        </div>
+        <!--
+        <script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>-->
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  </body>
+</html>
