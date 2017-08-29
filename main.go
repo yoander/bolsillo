@@ -3,9 +3,10 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
-	. "github.com/volatiletech/sqlboiler/queries/qm"
+	q "github.com/volatiletech/sqlboiler/queries/qm"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
@@ -30,13 +31,7 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	// - standard html  | iris.HTML(...)
-	// - django         | iris.Django(...)
-	// - pug(jade)      | iris.Pug(...)
-	// - handlebars     | iris.Handlebars(...)
-	// - amber          | iris.Amber(...)
-
-	tmpl := iris.Django("./views", ".html")
+	tmpl := iris.HTML("./views", ".html").Layout("layout.go.html")
 	tmpl.Reload(true) // reload templates on each request (development mode)
 	// default template funcs are:
 	//
@@ -45,34 +40,60 @@ func main() {
 	// - {{ render_r "header.html" }} // partial relative path to current page
 	// - {{ yield }}
 	// - {{ current }}
-	//tmpl.AddFunc("greet", func(s string) string {
-	//	return "Greetings " + s + "!"
-	//})
+
+	tmpl.AddFunc("dec", func(num int, step int) int {
+		return num - step
+	})
+
+	tmpl.AddFunc("inc", func(num int, step int) int {
+		return num + step
+	})
+
+	tmpl.AddFunc("fdec", func(num float64, step float64) float64 {
+		return num - step
+	})
+
+	tmpl.AddFunc("finc", func(num float64, step float64) float64 {
+		return num + step
+	})
+
+	tmpl.AddFunc("strtofloat", func(s string) (float64, error) {
+		return strconv.ParseFloat(s, 64)
+	})
+
+	tmpl.AddFunc("sum_prices", func(transactions models.TransactionSlice) float64 {
+		sum := 0.0
+		for _, t := range transactions {
+			if v, err := strconv.ParseFloat(t.TotalPrice, 64); err == nil {
+				sum += v
+			}
+		}
+		return sum
+	})
+
 	app.RegisterView(tmpl)
-	// Open handle to database like normal
-	// db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true")
 
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
-		tran, err := models.Transactions(db, Load("Tags")).All()
+		tran, err := models.Transactions(db, q.Load("Tags")).All()
 		if err != nil {
 			fmt.Println("Error Loading Transactions", err)
 		} else {
-			/*for i, tx := range txt {
-				s := []string{}
-				for _, t := range tx.R.Tags {
-					s = append(s, t.Tag)
-				}
-				fmt.Println(i, tx.Description.String, tx.CreatedAt, strings.Join(s, ","))
-			}*/
 			ctx.Gzip(true)
-			ctx.ViewData("Title", "Hi Page")
-			ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+			ctx.ViewData("Title", "Dashboard")
+			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
 			ctx.ViewData("Transactions", tran)
-			// ctx.ViewData("", myCcustomStruct{})
-			ctx.View("layout.html")
+			ctx.View("dashboard.go.html")
 		}
-	})
+	}).Name = "Dashboard"
+
+	app.Get("/transaction/new", func(ctx context.Context) {
+		ctx.Gzip(true)
+		ctx.ViewData("Title", "Dashboard")
+		//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+		//ctx.ViewData("Transactions", tran)
+		ctx.View("transaction-form.go.html")
+	}).Name = "NewTransaction"
 
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))

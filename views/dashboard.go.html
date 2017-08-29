@@ -1,0 +1,67 @@
+<h1>Dashboard</h1>
+<section class="row text-center placeholders">
+  <div class="col-6 col-sm-3 placeholder">
+    <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" width="200">
+    <h4>Label</h4>
+    <div class="text-muted">
+      Something else
+    </div>
+  </div>
+  <div class="col-6 col-sm-3 placeholder">
+    <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" width="200">
+    <h4>Label</h4><span class="text-muted">Something else</span>
+  </div>
+  <div class="col-6 col-sm-3 placeholder">
+    <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAAJ12AAAACwAAAAAAQABAAACAkQBADs=" width="200">
+    <h4>Label</h4><span class="text-muted">Something else</span>
+  </div>
+  <div class="col-6 col-sm-3 placeholder">
+    <img alt="Generic placeholder thumbnail" class="img-fluid rounded-circle" height="200" src="data:image/gif;base64,R0lGODlhAQABAIABAADcgwAAACwAAAAAAQABAAACAkQBADs=" width="200">
+    <h4>Label</h4><span class="text-muted">Something else</span>
+  </div>
+</section>
+<h2>Section title</h2>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Total Price</th>
+        <th>Note</th>
+        <th>Tags</th>
+      </tr>
+    </thead>
+    <tbody>
+       {{ $TotalPrice := 0.0 }}
+       {{ range $i, $tx := .Transactions }}
+        <tr>
+          <td>{{ inc $i 1 }}</td> 
+          <td>{{ .Description.String }}</td>
+          <td>{{ .Type }}</td>
+          <td>{{ .TotalPrice }}</td>
+          <td>{{ .Note }}</td>
+          <td>
+            {{ $total := dec (len .R.Tags) 1 }}
+            {{ range $j, $t := .R.Tags }}
+              {{ if lt $j $total }}
+                {{ .Tag }},
+              {{ else }}
+                {{ .Tag }}
+              {{ end }}
+            {{ end }}
+          </td>
+        </tr>  
+      {{ end }}
+      <tr>
+        <td></td> 
+        <td></td>
+        <td></td>
+        <td>{{ sum_prices .Transactions }}</td>
+        <td></td>
+        <td></td>
+      </tr> 
+    </tbody>
+  </table>
+</div>
