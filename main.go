@@ -78,6 +78,9 @@ func main() {
 
 	app.RegisterView(tmpl)
 
+	// Register static content
+	app.StaticWeb("/assets", "./assets")
+
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
 		tran, err := models.Transactions(db, q.OrderBy("date DESC"), q.Load("Tags")).All()
@@ -90,7 +93,7 @@ func main() {
 			ctx.ViewData("Transactions", tran)
 			ctx.View("dashboard.go.html")
 		}
-	}).Name = "Dashboard"
+	}).Name = "Home"
 
 	app.Get("/transaction/new", func(ctx context.Context) {
 		ctx.Gzip(true)
