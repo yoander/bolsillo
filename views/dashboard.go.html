@@ -22,25 +22,31 @@
 </section>
 <h2>Section title</h2>
 <div class="table-responsive">
+  {{ $total_price := sum_prices .Transactions }}
   <table class="table table-striped">
     <thead>
       <tr>
         <th>#</th>
         <th>Description</th>
         <th>Type</th>
-        <th>Total Price</th>
+        <th>Total Price<br/>
+          {{ $total_price }}
+        </th>
+        <th>Date</th>
         <th>Note</th>
         <th>Tags</th>
       </tr>
     </thead>
     <tbody>
-       {{ $TotalPrice := 0.0 }}
        {{ range $i, $tx := .Transactions }}
         <tr>
           <td>{{ inc $i 1 }}</td> 
           <td>{{ .Description.String }}</td>
           <td>{{ .Type }}</td>
-          <td>{{ .TotalPrice }}</td>
+          <td>
+            {{ .TotalPrice }}
+          </td>
+          <td>{{ date .Date "02-01-2006" }}
           <td>{{ .Note }}</td>
           <td>
             {{ $total := dec (len .R.Tags) 1 }}
@@ -58,7 +64,7 @@
         <td></td> 
         <td></td>
         <td></td>
-        <td>{{ sum_prices .Transactions }}</td>
+        <td>{{ $total_price }}</td>
         <td></td>
         <td></td>
       </tr> 

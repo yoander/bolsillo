@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
@@ -71,11 +72,15 @@ func main() {
 		return sum
 	})
 
+	tmpl.AddFunc("date", func(date time.Time, DateFormat string) string {
+		return date.Format(DateFormat)
+	})
+
 	app.RegisterView(tmpl)
 
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
-		tran, err := models.Transactions(db, q.Load("Tags")).All()
+		tran, err := models.Transactions(db, q.OrderBy("date DESC"), q.Load("Tags")).All()
 		if err != nil {
 			fmt.Println("Error Loading Transactions", err)
 		} else {
