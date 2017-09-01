@@ -11,6 +11,7 @@ import (
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/core/router"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/yoander/bolsillo/models"
@@ -31,6 +32,8 @@ func main() {
 	// and log the requests to the terminal.
 	app.Use(recover.New())
 	app.Use(logger.New())
+
+	rv := router.NewRoutePathReverser(app)
 
 	tmpl := iris.HTML("./views", ".html").Layout("layout.go.html")
 	tmpl.Reload(true) // reload templates on each request (development mode)
@@ -76,11 +79,22 @@ func main() {
 		return date.Format(DateFormat)
 	})
 
+	tmpl.AddFunc("now", func() time.Time {
+		return time.Now()
+	})
+
+	tmpl.AddFunc("css", func(filename string) string {
+		return rv.Path("Home") + "assets/css/" + filename
+	})
+
+	tmpl.AddFunc("js", func(filename string) string {
+		return rv.Path("Home") + "assets/js/" + filename
+	})
+
 	app.RegisterView(tmpl)
 
 	// Register static content
 	app.StaticWeb("/assets", "./assets")
-
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
 		tran, err := models.Transactions(db, q.OrderBy("date DESC"), q.Load("Tags")).All()
