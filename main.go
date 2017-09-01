@@ -110,11 +110,18 @@ func main() {
 	}).Name = "Home"
 
 	app.Get("/transaction/new", func(ctx context.Context) {
-		ctx.Gzip(true)
-		ctx.ViewData("Title", "Dashboard")
-		//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
-		//ctx.ViewData("Transactions", tran)
-		ctx.View("transaction-form.go.html")
+		// Eager loading
+		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
+		if err != nil {
+			fmt.Println("Error Loading Tags", err)
+		} else {
+			ctx.Gzip(true)
+			ctx.ViewData("Title", "Dashboard")
+			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+			ctx.ViewData("Tags", tags)
+			ctx.View("transaction-form.go.html")
+		}
+
 	}).Name = "NewTransaction"
 
 	// http://localhost:8080
