@@ -65,30 +65,19 @@
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="formGroupExampleInpudt">Tags</label>
-                <div class="dropdown">
+                <div id="d" class="dropdown">
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 100%">
-                        <li class="dropdown-item" href=""><span class="badge badge-link badge-primary">Primary</span></li>
-                        <li class="dropdown-item" href=""><span class="badge badge-link badge-secondary">Secondary</span></li>
-                        <li class="dropdown-item" href=""><span class="badge badge-link badge-warning">Warning</span></li>
+                        {{ range $_, $_ := .Tags }}
+                        <li class="dropdown-item"><span class="badge badge-secondary">{{ .Tag }}</span></li>
+                        {{ end }}
                     </ul>
-                    <div class="form-control" contenteditable="true"  id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                    </div>
+                    <div class="form-control" contenteditable="true"  id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ></div>
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="exampleFormControlTextarea1">Note</label>
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="2"></textarea>
             </div>
-           
-            <span class="badge badge-pill badge-primary">Primary</span>
-            <span class="badge badge-pill badge-secondary">Secondary</span>
-            <span class="badge badge-pill badge-success">Success</span>
-            <span class="badge badge-pill badge-danger">Danger</span>
-            <span class="badge badge-pill badge-warning">Warning</span>
-            <span class="badge badge-pill badge-info">Info</span>
-            <span class="badge badge-pill badge-light">Light</span>
-            <span class="badge badge-pill badge-dark">Dark</span>
-                  
         </div>
     </div>
 </form>
