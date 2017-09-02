@@ -97,7 +97,7 @@ func main() {
 	app.StaticWeb("/assets", "./assets")
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
-		tran, err := models.Transactions(db, q.OrderBy("date DESC"), q.Load("Tags")).All()
+		tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All()
 		if err != nil {
 			fmt.Println("Error Loading Transactions", err)
 		} else {
