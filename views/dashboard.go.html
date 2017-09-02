@@ -22,7 +22,7 @@
 </section>
 <h2>Section title</h2>
 <div class="table-responsive">
-  {{ $total_price := sum_prices .Transactions }}
+  {{ $total_price := printf "%.2f" (sum_prices .Transactions) }}
   <table class="table table-striped">
     <thead>
       <tr>
@@ -38,7 +38,7 @@
       </tr>
     </thead>
     <tbody>
-       {{ range $i, $tx := .Transactions }}
+       {{ range $i, $_ := .Transactions }}
         <tr>
           <td>{{ inc $i 1 }}</td> 
           <td>{{ .Description.String }}</td>
@@ -65,6 +65,7 @@
         <td></td>
         <td></td>
         <td>{{ $total_price }}</td>
+        <td></td>
         <td></td>
         <td></td>
       </tr> 
