@@ -1,18 +1,17 @@
-$('#d ul li').click(function (e) {
-    $(this).children('span').removeClass('badge-secondary').addClass('badge-info');
-    $('#dropdownMenuButton').html($('#dropdownMenuButton').html() + " " + $(this).html());
-    e.stopPropagation();
+$(document).ready(function () {
+    $('.tag').click(function () {
+        var tag = $(this);
+        if (tag.hasClass('badge-light')) {
+            tag.removeClass('badge-light').addClass('badge-info').html('✔ ' + tag.html());
+        } else if (tag.hasClass('badge-info')) {
+            var html = 
+            tag.removeClass('badge-info').addClass('badge-light').html(tag.html().replace('✔ ', ''));
+        }
+    });
 });
 /*
-$('#d').on('show.bs.dropdown', function () {
-    
-
-    $('#dropdownMenuButton span').each(function (index, ele) {
-        $('#d ul li span').each(function (j, ea) {
-            console.log($(ele).text() + '==' + $(ea).text());
-            if ( $(ele).text() == $(ea).text()) {
-                $(ea).parent().remove();  
-            }
-        });
-    });   
-})*/
+$(document).on('click', '#dropdownMenuButton span a', function (e) {
+    console.log('PASO');
+    console.log(e.which);
+});
+*/
