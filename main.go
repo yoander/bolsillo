@@ -87,8 +87,20 @@ func main() {
 		return rv.Path("Home") + "assets/css/" + filename
 	})
 
+	tmpl.AddFunc("cssv", func(filename string) string {
+		return rv.Path("Home") + "assets/vendor/css/" + filename
+	})
+
+	tmpl.AddFunc("fontv", func(filename string) string {
+		return rv.Path("Home") + "assets/vendor/fonts/" + filename
+	})
+
 	tmpl.AddFunc("js", func(filename string) string {
 		return rv.Path("Home") + "assets/js/" + filename
+	})
+
+	tmpl.AddFunc("jsv", func(filename string) string {
+		return rv.Path("Home") + "assets/vendor/js/" + filename
 	})
 
 	app.RegisterView(tmpl)
