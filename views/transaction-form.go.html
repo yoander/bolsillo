@@ -11,6 +11,7 @@
 {{end}}
 <h1>New Transaction</h1>
 <form>
+    <input id="tags" type="hidden" name="tags" value="[]">
     <div class="form-row">
         <div class="col-5">
             <div class="form-group">
@@ -25,13 +26,13 @@
             </div>
             <div class="form-group">
                 <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-primary active">
+                    <label class="btn btn-sm btn-light active">
                         <input type="radio" name="options" id="option1" autocomplete="off" checked>GET
                     </label>
-                    <label class="btn btn-primary">
+                    <label class="btn btn-sm btn-light">
                         <input type="radio" name="options" id="option2" autocomplete="off"> PUT
                     </label>
-                    <label class="btn btn-primary">
+                    <label class="btn btn-sm btn-light">
                         <input type="radio" name="options" id="option3" autocomplete="off"> TAX
                     </label>
                 </div>
@@ -70,7 +71,7 @@
                 </a>
                 <div>
                     {{ range $_, $_ := .Tags }}
-                        <span class="tag badge badge-light">{{ .Tag }}</span>
+                        <span id="{{.ID}}" class="tag badge badge-light" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
                     {{ end }}
                 </div>
             </div>
