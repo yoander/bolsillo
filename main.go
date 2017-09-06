@@ -103,6 +103,13 @@ func main() {
 		return rv.Path("Home") + "assets/vendor/js/" + filename
 	})
 
+	tmpl.AddFunc("active", func(RouteName string, CurrentURI string) string {
+		if rv.Path(RouteName) == CurrentURI {
+			return " active"
+		}
+		return ""
+	})
+
 	app.RegisterView(tmpl)
 
 	// Register static content
