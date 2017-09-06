@@ -134,7 +134,7 @@ func main() {
 		}
 	}).Name = "Home"
 
-	app.Get("/transaction/new", func(ctx context.Context) {
+	app.Get("/transactions/transaction", func(ctx context.Context) {
 		// Eager loading
 		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
 		if err != nil {
@@ -142,12 +142,29 @@ func main() {
 		} else {
 			ctx.Gzip(true)
 			ctx.ViewData("Title", "Dashboard")
-			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+			ctx.ViewData("Tags", tags)
+			//	ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+			ctx.View("transaction-form.go.html")
+		}
+
+	}).Name = "EditTransaction" // Also New
+
+	app.Get("/transactions", func(ctx context.Context) {
+		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+	}).Name = "ListTransactions"
+
+	app.Post("/transactions/transaction", func(ctx context.Context) {
+		// Eager loading
+		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
+		if err != nil {
+			fmt.Println("Error Loading Tags", err)
+		} else {
+			ctx.Gzip(true)
 			ctx.ViewData("Tags", tags)
 			ctx.View("transaction-form.go.html")
 		}
 
-	}).Name = "NewTransaction"
+	}).Name = "SaveTransaction"
 
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
