@@ -114,6 +114,12 @@ func main() {
 
 	// Register static content
 	app.StaticWeb("/assets", "./assets")
+
+	app.Use(func(ctx context.Context) {
+		ctx.ViewData("URI", ctx.GetCurrentRoute().Path())
+		ctx.Next()
+	})
+
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
 		tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All()
