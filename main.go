@@ -2,11 +2,14 @@ package main
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/volatiletech/sqlboiler/boil"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
 
 	"github.com/kataras/iris"
@@ -18,18 +21,28 @@ import (
 )
 
 func main() {
-	// Open handle to database like normal
-	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true")
-	if err != nil {
-		fmt.Println("Error opening connection", err)
-		return
+	type Tag struct {
+		ID  uint16 `json:"id,string"`
+		Tag string `json:"tag"`
 	}
 
 	app := iris.New() // defaults to these
+	p := fmt.Println
+	//pf := fmt.Printf
+	// Open handle to database like normal
+	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
+	boil.DebugMode = false
+	// Optionally set the writer as well. Defaults to os.Stdout
+	//fh, err := os.Create("debug.txt")
+	//boil.DebugWriter = fh
 
-	// Optionally, add two built'n handlers
-	// that can recover from any http-relative panics
-	// and log the requests to the terminal.
+	if err != nil {
+		p("Error opening connection", err)
+		return
+	}
+
+	boil.SetLocation(time.Local)
+
 	app.Use(recover.New())
 	app.Use(logger.New())
 
@@ -116,6 +129,7 @@ func main() {
 	app.StaticWeb("/assets", "./assets")
 
 	app.Use(func(ctx context.Context) {
+		ctx.Gzip(true)
 		ctx.ViewData("URI", ctx.GetCurrentRoute().Path())
 		ctx.Next()
 	})
@@ -126,7 +140,6 @@ func main() {
 		if err != nil {
 			fmt.Println("Error Loading Transactions", err)
 		} else {
-			ctx.Gzip(true)
 			ctx.ViewData("Title", "Dashboard")
 			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
 			ctx.ViewData("Transactions", tran)
@@ -135,17 +148,23 @@ func main() {
 	}).Name = "Home"
 
 	app.Get("/transactions/transaction", func(ctx context.Context) {
-		// Eager loading
+		ctx.ViewData("Title", "Edit transaction")
 		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
 		if err != nil {
+			ctx.ViewData("Error", "Error Loading Tags")
 			fmt.Println("Error Loading Tags", err)
 		} else {
-			ctx.Gzip(true)
-			ctx.ViewData("Title", "Dashboard")
 			ctx.ViewData("Tags", tags)
-			//	ctx.ViewData("route", ctx.GetCurrentRoute().Path())
-			ctx.View("transaction-form.go.html")
 		}
+
+		units, err := models.Units(db, q.OrderBy("name ASC")).All()
+		if err != nil {
+			ctx.ViewData("Error", "Error Loading Units")
+			fmt.Println("Error Loading Units", err)
+		} else {
+			ctx.ViewData("Units", units)
+		}
+		ctx.View("transaction-form.go.html")
 
 	}).Name = "EditTransaction" // Also New
 
@@ -154,16 +173,51 @@ func main() {
 	}).Name = "ListTransactions"
 
 	app.Post("/transactions/transaction", func(ctx context.Context) {
-		// Eager loading
-		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
-		if err != nil {
-			fmt.Println("Error Loading Tags", err)
+		var tx models.Transaction
+		tx.ID = 104
+		tx.PersonID = 1
+		tx.Type = ctx.PostValue("Type")
+		tx.Description.SetValid(ctx.PostValue("Description"))
+		if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err == nil {
+			tx.Date = date.In(boil.GetLocation())
 		} else {
-			ctx.Gzip(true)
-			ctx.ViewData("Tags", tags)
-			ctx.View("transaction-form.go.html")
+			p(err)
 		}
 
+		tx.Note = ctx.PostValue("Note")
+		tx.TotalPrice = ctx.PostValue("TotalPrice")
+		tx.Quantity = ctx.PostValue("Quantity")
+
+		if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil {
+			tx.UnitID.SetValid(uint8(unitID))
+			/*if unit, err := models.FindUnit(db, uint8(unitID)); err == nil {
+				tx.SetUnit(db, false, unit)
+			} else {
+				p(err)
+			}*/
+		} else {
+			p(err)
+		}
+
+		var tags []Tag
+		decoder := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags")))
+		if err := decoder.Decode(&tags); err == nil {
+			dbTags := []*models.Tag{}
+			for _, t := range tags {
+				var tag models.Tag
+				tag.ID = t.ID
+				tag.Tag = t.Tag
+				dbTags = append(dbTags, &tag)
+			}
+			err := tx.SetTags(db, false, dbTags...)
+			if err != nil {
+				p(err)
+			}
+		} else {
+			p(err)
+		}
+		tx.Update(db)
+		ctx.Redirect(rv.Path("EditTransaction"))
 	}).Name = "SaveTransaction"
 
 	// http://localhost:8080
