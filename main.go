@@ -134,7 +134,7 @@ func main() {
 		// Eager loading
 		tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All()
 		if err != nil {
-			fmt.Println("Error Loading Transactions", err)
+			p("Error Loading Transactions", err)
 		} else {
 			ctx.ViewData("Title", "Dashboard")
 			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
@@ -143,12 +143,12 @@ func main() {
 		}
 	}).Name = "Home"
 
-	app.Get("/transactions/transaction", func(ctx context.Context) {
+	app.Get("/transactions/transaction/{id:string}", func(ctx context.Context) {
 		ctx.ViewData("Title", "Edit transaction")
 		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
 		if err != nil {
 			ctx.ViewData("Error", "Error Loading Tags")
-			fmt.Println("Error Loading Tags", err)
+			p("Error Loading Tags", err)
 		} else {
 			ctx.ViewData("Tags", tags)
 		}
@@ -156,7 +156,7 @@ func main() {
 		units, err := models.Units(db, q.OrderBy("name ASC")).All()
 		if err != nil {
 			ctx.ViewData("Error", "Error Loading Units")
-			fmt.Println("Error Loading Units", err)
+			p("Error Loading Units", err)
 		} else {
 			ctx.ViewData("Units", units)
 		}
@@ -170,24 +170,30 @@ func main() {
 
 	app.Post("/transactions/transaction", func(ctx context.Context) {
 		var tx models.Transaction
-		tx.ID = 104
-		tx.PersonID = 1
-		tx.Type = ctx.PostValue("Type")
-		tx.Description.SetValid(ctx.PostValue("Description"))
-		if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err == nil {
-			tx.Date = date.In(boil.GetLocation())
-		} else {
-			p(err)
-		}
+		if ID, err := strconv.ParseUint(ctx.PostValue("ID"), 10, 64); err == nil {
+			tx.ID = uint(ID)
+			tx.PersonID = 1
+			tx.Type = ctx.PostValue("Type")
+			tx.Description = ctx.PostValue("Description")
+			if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err == nil {
+				// Add local time offset to date in order to avoid the DB driver insert as -1 day
+				now := time.Now().Local()
+				duration := time.Duration(now.Hour()) * time.Hour
+				duration += time.Duration(now.Minute()) * time.Minute
+				duration += time.Duration(now.Second()) * time.Second
+				duration += time.Duration(now.Nanosecond()) * time.Nanosecond
+				tx.Date = date.Add(duration)
+			} else {
+				p(err)
+			}
 
-		tx.Note = ctx.PostValue("Note")
-		tx.TotalPrice = ctx.PostValue("TotalPrice")
-		tx.Quantity = ctx.PostValue("Quantity")
+			tx.Note = ctx.PostValue("Note")
+			tx.TotalPrice = ctx.PostValue("TotalPrice")
+			tx.Quantity = ctx.PostValue("Quantity")
+			tx.Price = "0.00"
 
-		if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil {
-			tx.UnitID.SetValid(uint8(unitID))
-			/*if unit, err := models.FindUnit(db, uint8(unitID)); err == nil {
-				tx.SetUnit(db, false, unit)
+			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil {
+				tx.UnitID.SetValid(uint8(unitID))
 			} else {
 				p(err)
 			}
