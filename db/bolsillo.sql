@@ -2,27 +2,21 @@
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
-SET foreign_key_checks = 0;
-SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
-
-DROP DATABASE IF EXISTS `bolsillo`;
-CREATE DATABASE `bolsillo` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `bolsillo`;
 
 DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE `invoices` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `code` varchar(45) NOT NULL,
   `date` date NOT NULL,
+  `status` enum('PAID','PNDG','CANC') NOT NULL DEFAULT 'PAID' COMMENT 'PAID = PAID, CANC = CANCELED, PNDG = PENDING',
   `note` varchar(150) NOT NULL,
   `file_path` varchar(250) NOT NULL DEFAULT '',
   `deleted` tinyint(4) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   UNIQUE KEY `code_UNIQUE` (`code`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Invoices info';
 
 
 DROP TABLE IF EXISTS `persons`;
@@ -30,7 +24,7 @@ CREATE TABLE `persons` (
   `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `fullname` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Who belongs money transactions and invoices';
 
 
 DROP TABLE IF EXISTS `tags`;
@@ -40,13 +34,13 @@ CREATE TABLE `tags` (
   `groupby` varchar(45) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tag_UNIQUE` (`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Transaction clasification';
 
 
 DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `description` varchar(50) DEFAULT NULL,
+  `description` varchar(50) NOT NULL,
   `type` enum('GET','PUT','TAX') NOT NULL DEFAULT 'GET',
   `price` decimal(10,5) NOT NULL DEFAULT '0.00000',
   `total_price` decimal(7,2) NOT NULL DEFAULT '0.00',
@@ -56,10 +50,9 @@ CREATE TABLE `transactions` (
   `unit_id` tinyint(4) unsigned DEFAULT NULL,
   `quantity` decimal(7,2) NOT NULL DEFAULT '0.00',
   `person_id` smallint(5) unsigned NOT NULL,
-  `deleted` tinyint(4) DEFAULT '0',
+  `deleted` tinyint(4) NOT NULL DEFAULT '0',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `deleted_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_transaction_invoice_idx` (`invoice_id`),
   KEY `fk_transaction_person1_idx` (`person_id`),
@@ -136,7 +129,7 @@ CREATE TABLE `units` (
   UNIQUE KEY `symbol_UNIQUE` (`symbol`),
   KEY `fk_unit_unit1_idx` (`unit_id`),
   CONSTRAINT `fk_unit_unit1` FOREIGN KEY (`unit_id`) REFERENCES `units` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=' International System of Units ';
 
 
--- 2017-09-04 06:35:40
+-- 2017-09-11 04:17:31
