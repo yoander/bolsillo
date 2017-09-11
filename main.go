@@ -124,12 +124,11 @@ func main() {
 
 	app.Use(func(ctx context.Context) {
 		ctx.Gzip(true)
-		//r := app.GetRoute(ctx.GetCurrentRoute().Name())
-		//r.ResolvePath( ...)
 		ctx.ViewData("URI", ctx.Request().URL.RequestURI())
 		ctx.Next()
 	})
 
+	// Home / Dashboard
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
 		tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All()
@@ -143,31 +142,46 @@ func main() {
 		}
 	}).Name = "Home"
 
+	// List a transaction
 	app.Get("/transactions/transaction/{id:string}", func(ctx context.Context) {
 		ctx.ViewData("Title", "Edit transaction")
-		tags, err := models.Tags(db, q.OrderBy("tag ASC")).All()
-		if err != nil {
-			ctx.ViewData("Error", "Error Loading Tags")
-			p("Error Loading Tags", err)
+
+		// Load transaction
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
+			id := uint(ID)
+			if id > 0 {
+				if tx, err := models.FindTransaction(db, id); err == nil {
+					ctx.ViewData("tx", tx)
+				}
+			}
 		} else {
-			ctx.ViewData("Tags", tags)
+			p(err)
 		}
 
-		units, err := models.Units(db, q.OrderBy("name ASC")).All()
-		if err != nil {
-			ctx.ViewData("Error", "Error Loading Units")
-			p("Error Loading Units", err)
+		// Load tags
+		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err == nil {
+			ctx.ViewData("Tags", tags)
 		} else {
-			ctx.ViewData("Units", units)
+			//ctx.ViewData("Error", "Error Loading Tags")
+			p(err)
 		}
+
+		if units, err := models.Units(db, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err == nil {
+			ctx.ViewData("Units", units)
+		} else {
+			p(err)
+		}
+
 		ctx.View("transaction-form.go.html")
 
 	}).Name = "EditTransaction" // Also New
 
+	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
 	}).Name = "ListTransactions"
 
+	// Save a transaction
 	app.Post("/transactions/transaction", func(ctx context.Context) {
 		var tx models.Transaction
 		if ID, err := strconv.ParseUint(ctx.PostValue("ID"), 10, 64); err == nil {
