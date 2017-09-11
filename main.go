@@ -21,14 +21,8 @@ import (
 )
 
 func main() {
-	type Tag struct {
-		ID  uint16 `json:"id,string"`
-		Tag string `json:"tag"`
-	}
-
 	app := iris.New() // defaults to these
 	p := fmt.Println
-	//pf := fmt.Printf
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
 	boil.DebugMode = false
@@ -194,29 +188,40 @@ func main() {
 				tx.SetUnit(db, false, unit)
 			} else {
 				p(err)
-			}*/
+			}
+
+			updTags := true
+			if tx.ID == 0 {
+				if err := tx.Insert(db); err != nil {
+					updTags = false
+					p(err)
+				}
+
+			} else {
+				if err := tx.Update(db); err != nil {
+					updTags = false
+					p(err)
+				}
+			}
+
+			if updTags {
+				var IDs []interface{}
+				if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); len(IDs) > 0 {
+					if tags, err := models.Tags(db, q.WhereIn("id IN ?", IDs...)).All(); err == nil {
+						if err := tx.SetTags(db, false, tags...); err != nil {
+							p(err)
+						}
+					} else {
+						p(err)
+					}
+				} else if err != nil {
+					p(err)
+				}
+			}
 		} else {
 			p(err)
 		}
 
-		var tags []Tag
-		decoder := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags")))
-		if err := decoder.Decode(&tags); err == nil {
-			dbTags := []*models.Tag{}
-			for _, t := range tags {
-				var tag models.Tag
-				tag.ID = t.ID
-				tag.Tag = t.Tag
-				dbTags = append(dbTags, &tag)
-			}
-			err := tx.SetTags(db, false, dbTags...)
-			if err != nil {
-				p(err)
-			}
-		} else {
-			p(err)
-		}
-		tx.Update(db)
 		ctx.Redirect(rv.Path("EditTransaction"))
 	}).Name = "SaveTransaction"
 

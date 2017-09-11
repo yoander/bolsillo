@@ -1,14 +1,15 @@
 $(document).ready(function () {
     $('.tag').click(function () {
         var tag = $(this);
-        var elem = { "id": tag.attr('id'), "tag": tag.text() };
+        //var elem = { "id": tag.attr('id'), "tag": tag.text() };
+        var id = tag.attr('id')
         var input = $('input#tags');
         var tags = JSON.parse(input.val());
         if (tag.hasClass('badge-light')) {
-            tags.push(elem);
+            tags.push(id);
             tag.removeClass('badge-light').addClass('badge-info').html('✔ ' + tag.html());
         } else if (tag.hasClass('badge-info')) {
-            console.log(tags.splice(tags.indexOf(elem, 1)));
+            tags.splice(tags.indexOf(id, 1));
             tag.removeClass('badge-info').addClass('badge-light').html(tag.html().replace('✔ ', ''));
         }
         tags = input.val(JSON.stringify(tags));
