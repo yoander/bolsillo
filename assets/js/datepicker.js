@@ -1,3 +1,5 @@
 $(document).ready(function($) {
-    $('.datepicker').pickadate();
+    $('.datepicker').pickadate({
+        format: "dd mmmm, yyyy"
+    });
 });
