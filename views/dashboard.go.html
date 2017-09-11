@@ -35,18 +35,19 @@
         <th>Date</th>
         <th>Note</th>
         <th>Tags</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
        {{ range $i, $_ := .Transactions }}
         <tr>
-          <td>{{ inc $i 1 }}</td> 
-          <td>{{ .Description.String }}</td>
+          <td>{{ inc $i 1 }}-{{.ID}}</td> 
+          <td>{{ .Description }}</td>
           <td>{{ .Type }}</td>
           <td>
             {{ .TotalPrice }}
           </td>
-          <td>{{ date .Date "02-01-2006" }}
+          <td>{{ date .Date "02 Jan, 2006" }}
           <td>{{ .Note }}</td>
           <td>
             {{ $total := dec (len .R.Tags) 1 }}
@@ -58,6 +59,13 @@
               {{ end }}
             {{ end }}
           </td>
+          <td>
+            <div class="btn-group" role="group" aria-label="Basic example">
+            <a type="button" class="btn btn-sm btn-warning" href="{{urlpath "EditTransaction" (.ID|printf "%d") }}"><span class="icon-pencil3"></span> Edit</a>
+            <a type="button" class="btn btn-sm btn-info"><span class="icon-content_copy"></span> Clone</a>
+            <a type="button" class="btn btn-sm btn-danger"><span class="icon-trashcan"></span> Delete</a>
+          </div>
+        </td>
         </tr>  
       {{ end }}
       <tr>
