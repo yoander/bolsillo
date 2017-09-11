@@ -110,8 +110,8 @@ func main() {
 		return rv.Path("Home") + "assets/vendor/js/" + filename
 	})
 
-	tmpl.AddFunc("active", func(RouteName string, CurrentURI string) string {
-		if rv.Path(RouteName) == CurrentURI {
+	tmpl.AddFunc("active", func(URI string, CurrentURI string) string {
+		if URI == CurrentURI {
 			return " active"
 		}
 		return ""
@@ -124,7 +124,9 @@ func main() {
 
 	app.Use(func(ctx context.Context) {
 		ctx.Gzip(true)
-		ctx.ViewData("URI", ctx.GetCurrentRoute().Path())
+		//r := app.GetRoute(ctx.GetCurrentRoute().Name())
+		//r.ResolvePath( ...)
+		ctx.ViewData("URI", ctx.Request().URL.RequestURI())
 		ctx.Next()
 	})
 
