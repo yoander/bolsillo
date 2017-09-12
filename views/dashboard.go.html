@@ -41,7 +41,7 @@
     <tbody>
        {{ range $i, $_ := .Transactions }}
         <tr>
-          <td>{{ inc $i 1 }}-{{.ID}}</td> 
+          <td>{{ inc $i 1 }}</td> 
           <td>{{ .Description }}</td>
           <td>{{ .Type }}</td>
           <td>
@@ -50,13 +50,8 @@
           <td>{{ date .Date "02 Jan, 2006" }}
           <td>{{ .Note }}</td>
           <td>
-            {{ $total := dec (len .R.Tags) 1 }}
             {{ range $j, $t := .R.Tags }}
-              {{ if lt $j $total }}
-                {{ .Tag }},
-              {{ else }}
-                {{ .Tag }}
-              {{ end }}
+                <span class="tag badge badge-info">{{.Tag}}</span>
             {{ end }}
           </td>
           <td>

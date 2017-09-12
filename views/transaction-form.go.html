@@ -11,8 +11,8 @@
 {{end}}
 <h1>New Transaction</h1>
 <form method="post" action="{{.URI}}">
-    <input id="tags" type="hidden" name="Tags" value="[]">
-    <input id="id" type="hidden" name="ID" value="0">
+    <input id="tags" type="hidden" name="Tags" value="[{{ if .txTags }}{{ $taglen := dec (len .txTags) 1 }}{{ range $i, $_ := .txTags }}{{ .ID|printf "\"%d\"" }}{{ if lt $i $taglen }},{{end}}{{ end }}{{end}}]">
+    <!--<input id="id" type="hidden" name="ID" value="0">-->
     <div class="form-row">
         <div class="col-5">
             <div class="form-group">
@@ -27,43 +27,42 @@
             </div>
             <div class="form-group">
                 <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-sm btn-danger{{ if and .tx (eq .tx.Type "GET") }} active{{ end }}">
-                        <input type="radio" id="type" name="Type" autocomplete="off" value="GET"{{ if and .tx (eq .tx.Type "GET") }} checked="checked"{{ end }}> GET
+                    <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "GET" }} active{{ end }}{{- end}}">
+                        <input type="radio" id="type" name="Type" autocomplete="off" value="GET"{{with .tx -}}{{ if eq .Type "GET" }} checked{{ end }}{{- end}}> GET
                     </label>
-                    <label class="btn btn-sm btn-danger{{ if and .tx (eq .tx.Type "PUT") }} active{{ end }}">
-                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="PUT"{{ if and .tx (eq .tx.Type "PUT") }} checked="checked"{{ end }}> PUT
+                    <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "PUT" }} active{{ end }}{{- end}}">
+                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="PUT"{{with .tx -}}{{ if eq .Type "PUT" }} checked{{ end }}{{- end}}> PUT
                     </label>
-                    <label class="btn btn-sm btn-danger{{ if and .tx (eq .tx.Type "TAX") }} active{{ end }}">
-                        <input type="radio" id="type-tax" name="Type" autocomplete="off" value="TAX"{{ if and .tx (eq .tx.Type "TAX") }} checked="checked"{{ end }}> TAX
+                    <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "TAX" }} active{{ end }}{{- end}}">
+                        <input type="radio" id="type-tax" name="Type" autocomplete="off" value="TAX"{{with .tx -}}{{ if eq .Type "TAX" }} checked{{ end }}{{- end}}> TAX
                     </label>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-3 pl-0">
                     <label class="form-control-label" for="quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" name="Quantity" placeholder="1">
+                    <input type="text" class="form-control" id="quantity" name="Quantity" placeholder="1" value="{{ with .tx }}{{ .Quantity }}{{ end }}">
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-control-label" for="unit">Unit</label><br>
-                <select class="custom-select for-control" id="unit" name="Unit">
-                    <option value="0" selected>Select one item</option>
+            <div class="form-group col-3 pl-0">
+                <label class="form-control-label" for="unit">Unit</label>
+                <select class="custom-select form-control" id="unit" name="Unit">
+                    <option value="0">Select one item</option>
                     {{ range $_, $_ := .Units }}
-                    <option value="{{.ID}}">{{.Name}}</option>
+                    <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.UnitID.Uint8 .ID }} selected="selected"{{ end }}{{ end }}>{{.Name}}</option>
                     {{ end }}
                 </select>
             </div>
             <div class="form-group">
                 <div class="col-3 pl-0">
-                    <label class="form-control-label" for="TotalPrice">Total Price</label>
-                    <input type="text" class="form-control" id="TotalPrice" name="TotalPrice" placeholder="0.00">
+                    <label class="form-control-label" for="UnitPrice">Unit Price</label>
+                    <input type="text" class="form-control" id="TotalPrice" name="UnitPrice" placeholder="0.00" value="{{ with .tx }}{{ .Price }}{{ end }}">
                 </div>
-                <br>
-                <div class="card bg-light mb-3" style="max-width: 20rem;">
-                    <div class="card-body">
-                        <h4 class="card-title">Unit price</h4>
-                        <h5 class="card-text"><span class="icon-attach_money"></span><span id="unit-price">0.00</span></h5>
-                    </div>
+            </div>
+            <div class="form-group">
+                <div class="col-3 pl-0">
+                    <label class="form-control-label" for="TotalPrice">Total Price</label>
+                    <input type="text" class="form-control" id="TotalPrice" name="TotalPrice" placeholder="0.00" value="{{ with .tx }}{{ .TotalPrice }}{{ end }}">
                 </div>
             </div>
             <div class="form-group">
@@ -72,13 +71,17 @@
                 </a>
                 <div>
                     {{ range $_, $_ := .Tags }}
-                        <span id="{{.ID}}" class="tag badge badge-light" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
+                        {{if tag_exists .ID $.txTags }}
+                            <span id="{{.ID}}" class="tag badge badge-info" style="cursor: pointer;">✔&nbsp;{{.Tag}}&nbsp;</span>
+                        {{else}}
+                            <span id="{{.ID}}" class="tag badge badge-light" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
+                        {{end}}
                     {{ end }}
                 </div>
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="note">Note</label>
-                <textarea class="form-control" id="note" name="Note" rows="2"></textarea>
+                <textarea class="form-control" id="note" name="Note" rows="2">{{ with .tx }}{{ .Note }}{{ end }}</textarea>
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-info btn-sm"><span class="icon-floppy-disk"></span> Save</button>

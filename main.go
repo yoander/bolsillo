@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -117,6 +118,28 @@ func main() {
 		return ""
 	})
 
+	tmpl.AddFunc("in", func(v interface{}, in interface{}) bool {
+		val := reflect.Indirect(reflect.ValueOf(in))
+		switch val.Kind() {
+		case reflect.Slice, reflect.Array:
+			for i := 0; i < val.Len(); i++ {
+				if v == val.Index(i).Interface() {
+					return true
+				}
+			}
+		}
+		return false
+	})
+
+	tmpl.AddFunc("tag_exists", func(tag uint16, tags models.TagSlice) bool {
+		for _, t := range tags {
+			if t.ID == tag {
+				return true
+			}
+		}
+		return false
+	})
+
 	app.RegisterView(tmpl)
 
 	// Register static content
@@ -152,6 +175,11 @@ func main() {
 			if id > 0 {
 				if tx, err := models.FindTransaction(db, id); err == nil {
 					ctx.ViewData("tx", tx)
+					if txTags, err := tx.Tags(db, q.Select("ID")).All(); err == nil {
+						ctx.ViewData("txTags", txTags)
+					} else {
+						p(err)
+					}
 				}
 			}
 		} else {
@@ -182,9 +210,9 @@ func main() {
 	}).Name = "ListTransactions"
 
 	// Save a transaction
-	app.Post("/transactions/transaction", func(ctx context.Context) {
+	app.Post("/transactions/transaction/{id:string}", func(ctx context.Context) {
 		var tx models.Transaction
-		if ID, err := strconv.ParseUint(ctx.PostValue("ID"), 10, 64); err == nil {
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
 			tx.ID = uint(ID)
 			tx.PersonID = 1
 			tx.Type = ctx.PostValue("Type")
@@ -244,7 +272,7 @@ func main() {
 			p(err)
 		}
 
-		ctx.Redirect(rv.Path("EditTransaction"))
+		ctx.Redirect(rv.Path("Home"))
 	}).Name = "SaveTransaction"
 
 	// http://localhost:8080
