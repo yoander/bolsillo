@@ -26,7 +26,7 @@ func main() {
 	p := fmt.Println
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
-	boil.DebugMode = false
+	boil.DebugMode = true
 	// Optionally set the writer as well. Defaults to os.Stdout
 	//fh, err := os.Create("debug.txt")
 	//boil.DebugWriter = fh
@@ -165,6 +165,20 @@ func main() {
 		}
 	}).Name = "Home"
 
+	// List of transactions
+	app.Get("/transactions", func(ctx context.Context) {
+		// Eager loading
+		if tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All(); err == nil {
+			ctx.ViewData("Title", "Transactions")
+			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+			ctx.ViewData("Transactions", tran)
+			ctx.View("transactions.go.html")
+		} else {
+			p(err)
+		}
+		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+	}).Name = "ListTransactions"
+
 	// List a transaction
 	app.Get("/transactions/transaction/{id:string}", func(ctx context.Context) {
 		ctx.ViewData("Title", "Edit transaction")
@@ -187,6 +201,13 @@ func main() {
 		}
 
 		// Load tags
+		if invoices, err := models.Invoices(db, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err == nil {
+			ctx.ViewData("invoices", invoices)
+		} else {
+			p(err)
+		}
+
+		// Load tags
 		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err == nil {
 			ctx.ViewData("Tags", tags)
 		} else {
@@ -203,11 +224,6 @@ func main() {
 		ctx.View("transaction-form.go.html")
 
 	}).Name = "EditTransaction" // Also New
-
-	// List of transactions
-	app.Get("/transactions", func(ctx context.Context) {
-		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
-	}).Name = "ListTransactions"
 
 	// Save a transaction
 	app.Post("/transactions/transaction/{id:string}", func(ctx context.Context) {
@@ -234,30 +250,34 @@ func main() {
 			tx.Quantity = ctx.PostValue("Quantity")
 			tx.Price = "0.00"
 
-			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil {
+			if invoiceID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err == nil && invoiceID > 0 {
+				tx.InvoiceID.SetValid(uint(invoiceID))
+			} else {
+				p(err)
+			}
+
+			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil && unitID > 0 {
 				tx.UnitID.SetValid(uint8(unitID))
 			} else {
 				p(err)
 			}
 
 			updTags := true
-			if tx.ID == 0 {
-				if err := tx.Insert(db); err != nil {
-					updTags = false
-					p(err)
-				}
 
-			} else {
+			if tx.ID > 0 {
 				if err := tx.Update(db); err != nil {
 					updTags = false
 					p(err)
 				}
+			} else if err := tx.Insert(db); err != nil {
+				updTags = false
+				p(err)
 			}
 
 			if updTags {
 				var IDs []interface{}
 				if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); len(IDs) > 0 {
-					if tags, err := models.Tags(db, q.WhereIn("id IN ?", IDs...)).All(); err == nil {
+					if tags, err := models.Tags(db, q.Select("id"), q.WhereIn("id IN ?", IDs...)).All(); err == nil {
 						if err := tx.SetTags(db, false, tags...); err != nil {
 							p(err)
 						}
@@ -272,7 +292,7 @@ func main() {
 			p(err)
 		}
 
-		ctx.Redirect(rv.Path("Home"))
+		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "SaveTransaction"
 
 	// http://localhost:8080

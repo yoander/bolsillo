@@ -9,7 +9,7 @@
 <script src="{{ js "datepicker.js" }}"></script>
 <script src="{{ js "tags.js" }}"></script>
 {{end}}
-<h1>New Transaction</h1>
+<h2>New Transaction</h2>
 <form method="post" action="{{.URI}}">
     <input id="tags" type="hidden" name="Tags" value="[{{ if .txTags }}{{ $taglen := dec (len .txTags) 1 }}{{ range $i, $_ := .txTags }}{{ .ID|printf "\"%d\"" }}{{ if lt $i $taglen }},{{end}}{{ end }}{{end}}]">
     <!--<input id="id" type="hidden" name="ID" value="0">-->
@@ -25,10 +25,20 @@
                     <input type="text" class="form-control datepicker" id="date" name="Date" placeholder="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" value="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" readonly>
                 </div>
             </div>
+            <div class="form-group col-3 pl-0">
+                <label class="form-control-label" for="invoice">Invoice</label>
+                <select class="custom-select form-control" id="invoice" name="Invoice">
+                    <option value="0">Select one item</option>
+                    {{ range $_, $_ := .invoices }}
+                    <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }} title="{{ date .Date "02-01-2006" }}/{{ .Note }}">{{.Code}}</option>
+                    {{ end }}
+                </select>
+            </div>
             <div class="form-group">
-                <div class="btn-group" data-toggle="buttons">
+                <label class="form-control-label" for="type">Type</label><br>
+                <div class="btn-group" data-toggle="buttons" id="type">
                     <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "GET" }} active{{ end }}{{- end}}">
-                        <input type="radio" id="type" name="Type" autocomplete="off" value="GET"{{with .tx -}}{{ if eq .Type "GET" }} checked{{ end }}{{- end}}> GET
+                        <input type="radio" id="type-get" name="Type" autocomplete="off" value="GET"{{with .tx -}}{{ if eq .Type "GET" }} checked{{ end }}{{- end}}> GET
                     </label>
                     <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "PUT" }} active{{ end }}{{- end}}">
                         <input type="radio" id="type-put" name="Type" autocomplete="off" value="PUT"{{with .tx -}}{{ if eq .Type "PUT" }} checked{{ end }}{{- end}}> PUT
@@ -74,7 +84,7 @@
                         {{if tag_exists .ID $.txTags }}
                             <span id="{{.ID}}" class="tag badge badge-info" style="cursor: pointer;">✔&nbsp;{{.Tag}}&nbsp;</span>
                         {{else}}
-                            <span id="{{.ID}}" class="tag badge badge-light" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
+                            <span id="{{.ID}}" class="tag badge badge-danger" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
                         {{end}}
                     {{ end }}
                 </div>

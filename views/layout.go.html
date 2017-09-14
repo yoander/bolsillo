@@ -42,8 +42,15 @@
                   <a class="nav-link{{active (urlpath "Home") .URI}}" href="{{urlpath "Home"}}">Dashboard<span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">New Transaction</a>
+                  <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}"> Transactions</a>
                 </li>
+                <li class="nav-item">
+                  <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; New</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                  <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}"> Transactions</a>
+                </li>-->
                 <li class="nav-item">
                   <a class="nav-link" href="#">Reports</a>
                 </li>
