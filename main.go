@@ -225,6 +225,34 @@ func main() {
 
 	}).Name = "EditTransaction" // Also New
 
+	// Clone a transaction
+	app.Get("/transactions/transaction/clone/{id:string}", func(ctx context.Context) {
+		// Load transaction
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
+			id := uint(ID)
+			if id > 0 {
+				if tx, err := models.FindTransaction(db, id); err == nil {
+					txTags, err := tx.Tags(db, q.Select("ID")).All()
+					if err != nil {
+						p(err)
+					}
+
+					tx.ID = 0
+					if err := tx.Insert(db); err == nil {
+						if len(txTags) > 0 {
+							tx.SetTags(db, false, txTags...)
+						}
+					} else {
+						p(err)
+					}
+				}
+			}
+		} else {
+			p(err)
+		}
+		ctx.Redirect(rv.Path("ListTransactions"))
+	}).Name = "CloneTransaction" // Also New
+
 	// Save a transaction
 	app.Post("/transactions/transaction/{id:string}", func(ctx context.Context) {
 		var tx models.Transaction
