@@ -1,0 +1,55 @@
+<h2>Transactions</h2>
+<div class="table-responsive">
+  {{ $total_price := printf "%.2f" (sum_prices .Transactions) }}
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Description</th>
+        <th>Type</th>
+        <th>Total Price<br/>
+          {{ $total_price }}
+        </th>
+        <th>Date</th>
+        <!--<th>Note</th>-->
+        <th>Tags</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+       {{ range $i, $_ := .Transactions }}
+        <tr>
+          <td>{{ inc $i 1 }}</td> 
+          <td>{{ .Description }}</td>
+          <td>{{ .Type }}</td>
+          <td>
+            {{ .TotalPrice }}
+          </td>
+          <td>{{ date .Date "02 Jan, 2006" }}
+          <!--<td>{{ .Note }}</td>-->
+          <td>
+            {{ range $j, $t := .R.Tags }}
+                <span class="tag badge badge-info">{{.Tag}}</span>
+            {{ end }}
+          </td>
+          <td>
+            <div class="btn-group" role="group" aria-label="Basic example">
+            <a type="button" class="btn btn-sm btn-warning" href="{{urlpath "EditTransaction" (.ID|printf "%d") }}"><span class="icon-pencil3"></span> Edit</a>
+            <a type="button" class="btn btn-sm btn-info" href="{{urlpath "CloneTransaction" (.ID|printf "%d") }}" data-url="{{urlpath "CloneTransaction" (.ID|printf "%d") }}"><span class="icon-content_copy"></span> Clone</a>
+            <a type="button" class="btn btn-sm btn-danger" href="#"><span class="icon-trashcan"></span> Delete</a>
+          </div>
+        </td>
+        </tr>  
+      {{ end }}
+      <tr>
+        <td></td> 
+        <td></td>
+        <td></td>
+        <td>{{ $total_price }}</td>
+        <!--<td></td>-->
+        <td></td>
+        <td></td>
+      </tr> 
+    </tbody>
+  </table>
+</div>
