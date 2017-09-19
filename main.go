@@ -168,7 +168,7 @@ func main() {
 	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		// Eager loading
-		if tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All(); err == nil {
+		if tran, err := models.Transactions(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All(); err == nil {
 			ctx.ViewData("Title", "Transactions")
 			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
 			ctx.ViewData("Transactions", tran)
@@ -236,8 +236,11 @@ func main() {
 					if err != nil {
 						p(err)
 					}
-
+					now := time.Now().Local()
 					tx.ID = 0
+					tx.Date = now
+					tx.CreatedAt = now
+					tx.UpdatedAt = now
 					if err := tx.Insert(db); err == nil {
 						if len(txTags) > 0 {
 							tx.SetTags(db, false, txTags...)
@@ -276,7 +279,7 @@ func main() {
 			tx.Note = ctx.PostValue("Note")
 			tx.TotalPrice = ctx.PostValue("TotalPrice")
 			tx.Quantity = ctx.PostValue("Quantity")
-			tx.Price = "0.00"
+			//tx.Price = "0.00"
 
 			if invoiceID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err == nil && invoiceID > 0 {
 				tx.InvoiceID.SetValid(uint(invoiceID))
@@ -322,6 +325,25 @@ func main() {
 
 		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "SaveTransaction"
+
+	// Clone a transaction
+	app.Get("/transactions/transaction/delete/{id:string}", func(ctx context.Context) {
+		// Load transaction
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
+			id := uint(ID)
+			if id > 0 {
+				if tx, err := models.FindTransaction(db, id); err == nil {
+					tx.Deleted = 1
+					if err := tx.Update(db); err != nil {
+						p(err)
+					}
+				}
+			}
+		} else {
+			p(err)
+		}
+		ctx.Redirect(rv.Path("ListTransactions"))
+	}).Name = "DeleteTransaction"
 
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))

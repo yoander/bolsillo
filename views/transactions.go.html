@@ -34,9 +34,9 @@
           </td>
           <td>
             <div class="btn-group" role="group" aria-label="Basic example">
-            <a type="button" class="btn btn-sm btn-warning" href="{{urlpath "EditTransaction" (.ID|printf "%d") }}"><span class="icon-pencil3"></span> Edit</a>
-            <a type="button" class="btn btn-sm btn-info" href="{{urlpath "CloneTransaction" (.ID|printf "%d") }}" data-url="{{urlpath "CloneTransaction" (.ID|printf "%d") }}"><span class="icon-content_copy"></span> Clone</a>
-            <a type="button" class="btn btn-sm btn-danger" href="#"><span class="icon-trashcan"></span> Delete</a>
+            <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}"><span class="icon-pencil3"></span> Edit</a>
+            <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-url="{{urlpath "CloneTransaction" (.ID|printf "%d") }}"><span class="icon-content_copy"></span> Clone</a>
+            <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}"><span class="icon-trashcan"></span> Delete</a>
           </div>
         </td>
         </tr>  
