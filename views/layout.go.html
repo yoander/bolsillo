@@ -41,46 +41,44 @@
                 <li class="nav-item">
                   <a class="nav-link{{active (urlpath "Home") .URI}}" href="{{urlpath "Home"}}">Dashboard<span class="sr-only">(current)</span></a>
                 </li>
+              </ul>
+              <ul class="nav nav-pills flex-column">  
                 <li class="nav-item">
                   <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}"> Transactions</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; New</a>
                 </li>
-                <!--
                 <li class="nav-item">
-                  <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}"> Transactions</a>
-                </li>-->
+                  <a class="nav-link" href="#">&#9492; Expenses</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">&#9492; Income</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">&#9492; Recurring</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Invoices</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Tags</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#">Units</a>
+                </li>
+              </ul>
+              <ul class="nav nav-pills flex-column">
                 <li class="nav-item">
                   <a class="nav-link" href="#">Reports</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Export</a>
-                </li>
-              </ul>
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Nav item</a>
+                    <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; Report1</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Nav item again</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">One more nav</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Another nav item</a>
-                </li>
-              </ul>
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Nav item again</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">One more nav</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Another nav item</a>
+                    <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; Report2</a>
                 </li>
               </ul>
             </nav>
