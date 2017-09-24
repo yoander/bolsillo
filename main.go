@@ -279,7 +279,7 @@ func main() {
 			tx.Note = ctx.PostValue("Note")
 			tx.TotalPrice = ctx.PostValue("TotalPrice")
 			tx.Quantity = ctx.PostValue("Quantity")
-			//tx.Price = "0.00"
+			tx.Price = ctx.PostValue("UnitPrice")
 
 			if invoiceID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err == nil && invoiceID > 0 {
 				tx.InvoiceID.SetValid(uint(invoiceID))
