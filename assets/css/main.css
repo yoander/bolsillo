@@ -89,3 +89,9 @@ h1 {
 .table td {
   vertical-align: middle;
 }
+
+table#transactions thead th:nth-child(3),
+table#transactions tbody td:nth-child(3) {
+  width: 5%;
+  text-align: center;
+}
