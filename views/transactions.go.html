@@ -24,12 +24,9 @@
         <td>
           {{ .TotalPrice }}
         </td> 
-        <td>{{ date .Date "02 Jan, 2006" }}
+        <td>{{ date .Date "02 Jan, 2006" }}</td>
         <!--<td>{{ .Note }}</td>-->
-        <td>
-          {{ range $j, $t := .R.Tags }}
-              <span class="tag badge badge-primary">{{.Tag}}</span>
-          {{ end }}
+        <td>{{ range $j, $t := .R.Tags }}<a class="tag badge badge-secondary" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{.Tag}}</a> {{ end }}
         </td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">

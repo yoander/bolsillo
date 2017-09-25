@@ -166,6 +166,20 @@ func main() {
 	}).Name = "Home"
 
 	// List of transactions
+	app.Get("/invoices", func(ctx context.Context) {
+		// Eager loading
+		if inv, err := models.Invoices(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All(); err == nil {
+			ctx.ViewData("Title", "Invoices")
+			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
+			ctx.ViewData("Invoices", inv)
+			ctx.View("invoices.go.html")
+		} else {
+			p(err)
+		}
+		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+	}).Name = "ListInvoices"
+
+	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		// Eager loading
 		if tran, err := models.Transactions(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All(); err == nil {
