@@ -1,0 +1,35 @@
+<h2>Invoices <a type="submit" class="btn btn-primary btn-sm float-right mr-3" href="#"><i class="fa fa-file" aria-hidden="true"></i> New</a></h2>
+<table id="invoices" class="table table-responsive table-striped table-sm">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Code</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Note</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range $i, $_ := .Invoices }}
+      <tr>
+        <td>{{ inc $i 1 }}</td> 
+        <td>{{ .Code }}</td>
+        <td>{{ date .Date "02 Jan, 2006" }}
+        <td>
+          {{ if eq .Status "PAID" }}<i class="fa fa-check text-success" aria-hidden="true"></i>
+          {{ else if eq .Status "PNDG" }}<i class="fa fa-hourglass-half text-warning" aria-hidden="true"></i>
+          {{ else if eq .Status "CANC" }}<i class="fa fa-ban text-danger" aria-hidden="true"></i>
+          {{ end }}
+        <td>{{ .Note }}</td>
+        <td>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+            <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-url="{{urlpath "CloneTransaction" (.ID|printf "%d") }}"><i class="fa fa-clone" aria-hidden="true"></i></a>
+            <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          </div>
+        </td>
+      </tr>  
+    {{ end }}
+  </tbody>
+</table>

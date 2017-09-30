@@ -10,24 +10,24 @@
 <script src="{{ js "tags.js" }}"></script>
 {{end}}
 <h2>New Transaction</h2>
-<form method="post" action="{{.URI}}">
+<form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
     <input id="tags" type="hidden" name="Tags" value="[{{ if .txTags }}{{ $taglen := dec (len .txTags) 1 }}{{ range $i, $_ := .txTags }}{{ .ID|printf "\"%d\"" }}{{ if lt $i $taglen }},{{end}}{{ end }}{{end}}]">
     <!--<input id="id" type="hidden" name="ID" value="0">-->
     <div class="form-row">
         <div class="col-5">
             <div class="form-group">
                 <label class="form-control-label" for="description">Description</label>
-                <input type="text" class="form-control form-control-sm" id="description" name="Description" placeholder="Description" value="{{ if .tx }}{{ .tx.Description }}{{ end }}">
+                <input type="text" class="form-control" id="description" name="Description" placeholder="Description" value="{{ if .tx }}{{ .tx.Description }}{{ end }}">
             </div>
             <div class="form-group">
                 <div style="position: relative">
                     <label class="form-control-label" for="date">Date</label>
-                    <input type="text" class="form-control form-control-sm datepicker" id="date" name="Date" placeholder="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" value="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" readonly>
+                    <input type="text" class="form-control datepicker" id="date" name="Date" placeholder="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" value="{{ if .tx }}{{ date .tx.Date "02 January, 2006" }}{{ else }}{{ date now "02 January, 2006" }}{{ end }}" readonly>
                 </div>
             </div>
             <div class="form-group col-3 pl-0">
                 <label class="form-control-label" for="invoice">Invoice</label>
-                <select class="custom-select form-control form-control-sm" id="invoice" name="Invoice">
+                <select class="custom-select form-control" id="invoice" name="Invoice">
                     <option value="0">Select one item</option>
                     {{ range $_, $_ := .invoices }}
                     <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }} title="{{ date .Date "02-01-2006" }}/{{ .Note }}">{{.Code}}</option>
@@ -48,12 +48,12 @@
             <div class="form-group">
                 <div class="col-3 pl-0">
                     <label class="form-control-label" for="quantity">Quantity</label>
-                    <input type="text" class="form-control form-control-sm" id="quantity" name="Quantity" placeholder="1" value="{{ with .tx }}{{ .Quantity }}{{ end }}">
+                    <input type="text" class="form-control" id="quantity" name="Quantity" placeholder="1" value="{{ with .tx }}{{ .Quantity }}{{ end }}">
                 </div>
             </div>
             <div class="form-group col-3 pl-0">
                 <label class="form-control-label" for="unit">Unit</label>
-                <select class="form-control form-control-sm" id="unit" name="Unit">
+                <select class="form-control" id="unit" name="Unit">
                     <option value="0">Select one item</option>
                     {{ range $_, $_ := .Units }}
                     <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.UnitID.Uint8 .ID }} selected="selected"{{ end }}{{ end }}>{{.Name}}</option>
@@ -63,13 +63,13 @@
             <div class="form-group">
                 <div class="col-3 pl-0">
                     <label class="form-control-label" for="UnitPrice">Unit Price</label>
-                    <input type="text" class="form-control form-control-sm" id="TotalPrice" name="UnitPrice" placeholder="0.00" value="{{ with .tx }}{{ .Price }}{{ end }}">
+                    <input type="text" class="form-control" id="TotalPrice" name="UnitPrice" placeholder="0.00" value="{{ with .tx }}{{ .Price }}{{ end }}">
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-3 pl-0">
                     <label class="form-control-label" for="TotalPrice">Total Price</label>
-                    <input type="text" class="form-control form-control-sm" id="TotalPrice" name="TotalPrice" placeholder="0.00" value="{{ with .tx }}{{ .TotalPrice }}{{ end }}">
+                    <input type="text" class="form-control" id="TotalPrice" name="TotalPrice" placeholder="0.00" value="{{ with .tx }}{{ .TotalPrice }}{{ end }}">
                 </div>
             </div>
             <div class="form-group">
@@ -88,13 +88,12 @@
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="note">Note</label>
-                <textarea class="form-control form-control-sm" id="note" name="Note" rows="2">{{ with .tx }}{{ .Note }}{{ end }}</textarea>
+                <textarea class="form-control" id="note" name="Note" rows="2">{{ with .tx }}{{ .Note }}{{ end }}</textarea>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-info btn-sm"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
+                <button type="submit" class="btn btn-info"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button type="submit" class="btn btn-success"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
             </div>
         </div>
     </div>
 </form>
-

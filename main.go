@@ -22,18 +22,42 @@ import (
 )
 
 func main() {
+	f := fmt.Sprintf
 	app := iris.New() // defaults to these
-	p := fmt.Println
+	log := app.Logger()
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
-	boil.DebugMode = true
 	// Optionally set the writer as well. Defaults to os.Stdout
 	//fh, err := os.Create("debug.txt")
 	//boil.DebugWriter = fh
 
 	if err != nil {
-		p("Error opening connection", err)
-		return
+		log.Fatal(err)
+	}
+
+	/*simpleDebug := func() string {
+		_, fileName, fileLine, ok := runtime.Caller(1)
+		var s string
+		if ok {
+			s = fmt.Sprintf("%s:%d", fileName, fileLine)
+		} else {
+			s = ""
+		}
+		return s
+	}*/
+
+	boil.DebugMode = false
+	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
+		ctx.ViewData("Title", "Error!!!")
+		ctx.ViewData("header", ctx.Values().GetString("header"))
+		ctx.ViewData("message", ctx.Values().GetString("message"))
+		ctx.View("error.go.html")
+	})
+
+	error500 := func(ctx context.Context, msg string, header string) {
+		ctx.StatusCode(500)
+		ctx.Values().Set("header", header)
+		ctx.Values().Set("message", msg)
 	}
 
 	boil.SetLocation(time.Local)
@@ -154,157 +178,156 @@ func main() {
 	// Home / Dashboard
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
-		tran, err := models.Transactions(db, q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All()
-		if err != nil {
-			p("Error Loading Transactions", err)
-		} else {
-			ctx.ViewData("Title", "Dashboard")
-			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
-			ctx.ViewData("Transactions", tran)
-			ctx.View("dashboard.go.html")
-		}
+		ctx.ViewData("Title", "Dashboard")
+		ctx.View("dashboard.go.html")
 	}).Name = "Home"
 
-	// List of transactions
+	// Home / Dashboard
 	app.Get("/invoices", func(ctx context.Context) {
 		// Eager loading
-		if inv, err := models.Invoices(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All(); err == nil {
-			ctx.ViewData("Title", "Invoices")
-			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
-			ctx.ViewData("Invoices", inv)
-			ctx.View("invoices.go.html")
-		} else {
-			p(err)
+		inv, err := models.Invoices(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
+		if err != nil {
+			error500(ctx, err.Error(), "Loading invoices")
 		}
-		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+
+		ctx.ViewData("Title", "Invoices")
+		ctx.ViewData("Invoices", inv)
+		ctx.View("invoices.go.html")
 	}).Name = "ListInvoices"
 
+	// List of invoices
+	app.Get("/invoice/edit/{id:string}", func(ctx context.Context) {
+		ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64)
+		if err != nil {
+			error500(ctx, err.Error(), "Editing invoice")
+		}
+		ctx.ViewData("Title", "Edit Invoice")
+		id := uint(ID)
+		if id > 0 {
+			inv, err := models.FindInvoice(db, id)
+			if err != nil {
+				error500(ctx, err.Error(), "Finding invoice: "+string(id))
+			}
+			ctx.ViewData("inv", inv)
+		}
+	}).Name = "EditInvoice"
+	/* =================== End of Invoices ====================== */
+
+	/* =================== Transactions ====================== */
 	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		// Eager loading
-		if tran, err := models.Transactions(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, invoice_id DESC, id DESC"), q.Load("Tags")).All(); err == nil {
-			ctx.ViewData("Title", "Transactions")
-			//ctx.ViewData("Name", "iris") // {{.Name}} will render: iris
-			ctx.ViewData("Transactions", tran)
-			ctx.View("transactions.go.html")
-		} else {
-			p(err)
+		tran, err := models.Transactions(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC"), q.Load("Tags")).All()
+		if err != nil {
+			error500(ctx, err.Error(), "Error Loading Transactions")
 		}
-		//ctx.ViewData("route", ctx.GetCurrentRoute().Path())
+
+		ctx.ViewData("Title", "Transactions")
+		ctx.ViewData("Transactions", tran)
+		ctx.View("transactions.go.html")
 	}).Name = "ListTransactions"
 
-	// List a transaction
-	app.Get("/transactions/transaction/{id:string}", func(ctx context.Context) {
-		ctx.ViewData("Title", "Edit transaction")
-
-		// Load transaction
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
-			id := uint(ID)
-			if id > 0 {
-				if tx, err := models.FindTransaction(db, id); err == nil {
-					ctx.ViewData("tx", tx)
-					if txTags, err := tx.Tags(db, q.Select("ID")).All(); err == nil {
-						ctx.ViewData("txTags", txTags)
-					} else {
-						p(err)
-					}
+	// Edit one transaction
+	app.Get("/transaction/edit/{id:string}", func(ctx context.Context) {
+		id := ctx.Params().Get("id")
+		if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
+			error500(ctx, err.Error(), f("Error editing transaction %s", ID))
+		} else if ID > 0 {
+			if tx, err := models.FindTransaction(db, uint(ID)); err != nil {
+				error500(ctx, err.Error(), f("Error editing transaction %s", ID))
+			} else {
+				ctx.ViewData("tx", tx)
+				if txTags, err := tx.Tags(db, q.Select("ID")).All(); err != nil {
+					error500(ctx, err.Error(), f("Error editing transaction %s", ID))
+				} else {
+					ctx.ViewData("txTags", txTags)
 				}
 			}
-		} else {
-			p(err)
 		}
 
-		// Load tags
-		if invoices, err := models.Invoices(db, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err == nil {
+		if invoices, err := models.Invoices(db, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err != nil {
+			error500(ctx, err.Error(), f("Error editing transaction %s", id))
+		} else {
 			ctx.ViewData("invoices", invoices)
-		} else {
-			p(err)
 		}
-
 		// Load tags
-		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err == nil {
-			ctx.ViewData("Tags", tags)
+		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err != nil {
+			error500(ctx, err.Error(), f("Error editing transaction %s", id))
 		} else {
-			//ctx.ViewData("Error", "Error Loading Tags")
-			p(err)
+			ctx.ViewData("Tags", tags)
 		}
 
-		if units, err := models.Units(db, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err == nil {
-			ctx.ViewData("Units", units)
+		if units, err := models.Units(db, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err != nil {
+			error500(ctx, err.Error(), f("Error editing transaction %s", id))
 		} else {
-			p(err)
+			ctx.ViewData("Units", units)
 		}
 
 		ctx.View("transaction-form.go.html")
-
 	}).Name = "EditTransaction" // Also New
 
 	// Clone a transaction
-	app.Get("/transactions/transaction/clone/{id:string}", func(ctx context.Context) {
-		// Load transaction
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
-			id := uint(ID)
-			if id > 0 {
-				if tx, err := models.FindTransaction(db, id); err == nil {
-					txTags, err := tx.Tags(db, q.Select("ID")).All()
-					if err != nil {
-						p(err)
-					}
-					now := time.Now().Local()
-					tx.ID = 0
-					tx.Date = now
-					tx.CreatedAt = now
-					tx.UpdatedAt = now
-					if err := tx.Insert(db); err == nil {
-						if len(txTags) > 0 {
-							tx.SetTags(db, false, txTags...)
-						}
-					} else {
-						p(err)
-					}
+	app.Get("/transaction/clone/{id:string}", func(ctx context.Context) {
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
+			error500(ctx, err.Error(), "Error Loading Transactions")
+		} else if id := uint(ID); id > 0 {
+			if tx, err := models.FindTransaction(db, id); err != nil {
+				error500(ctx, err.Error(), "Error Loading Transactions")
+			} else if txTags, err := tx.Tags(db, q.Select("ID")).All(); err != nil {
+				error500(ctx, err.Error(), "Error Loading Transactions")
+			} else {
+				now := time.Now().Local()
+				tx.ID = 0
+				tx.Date = now
+				tx.CreatedAt = now
+				tx.UpdatedAt = now
+				if err := tx.Insert(db); err != nil {
+					error500(ctx, err.Error(), "Error Loading Transactions")
+				}
+				if len(txTags) > 0 {
+					tx.SetTags(db, false, txTags...)
 				}
 			}
-		} else {
-			p(err)
 		}
 		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "CloneTransaction" // Also New
 
 	// Save a transaction
-	app.Post("/transactions/transaction/{id:string}", func(ctx context.Context) {
-		var tx models.Transaction
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
+	app.Post("/transaction/save/{id:string}", func(ctx context.Context) {
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+		} else {
+			var tx models.Transaction
 			tx.ID = uint(ID)
 			tx.PersonID = 1
 			tx.Type = ctx.PostValue("Type")
 			tx.Description = ctx.PostValue("Description")
-			if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err == nil {
-				// Add local time offset to date in order to avoid the DB driver insert as -1 day
-				now := time.Now().Local()
+			tx.Note = ctx.PostValue("Note")
+			tx.TotalPrice = ctx.PostValue("TotalPrice")
+			tx.Quantity = ctx.PostValue("Quantity")
+			tx.Price = ctx.PostValue("UnitPrice")
+			if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err != nil {
+				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+			} else {
+				// Add UTC time offset to date in order to avoid the DB driver insert as -1 day
+				now := time.Now().UTC()
 				duration := time.Duration(now.Hour()) * time.Hour
 				duration += time.Duration(now.Minute()) * time.Minute
 				duration += time.Duration(now.Second()) * time.Second
 				duration += time.Duration(now.Nanosecond()) * time.Nanosecond
 				tx.Date = date.Add(duration)
-			} else {
-				p(err)
 			}
 
-			tx.Note = ctx.PostValue("Note")
-			tx.TotalPrice = ctx.PostValue("TotalPrice")
-			tx.Quantity = ctx.PostValue("Quantity")
-			tx.Price = ctx.PostValue("UnitPrice")
-
-			if invoiceID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err == nil && invoiceID > 0 {
-				tx.InvoiceID.SetValid(uint(invoiceID))
-			} else {
-				p(err)
+			if invID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err != nil {
+				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+			} else if invID > 0 {
+				tx.InvoiceID.SetValid(uint(invID))
 			}
 
-			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err == nil && unitID > 0 {
+			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err != nil {
+				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+			} else if unitID > 0 {
 				tx.UnitID.SetValid(uint8(unitID))
-			} else {
-				p(err)
 			}
 
 			updTags := true
@@ -312,53 +335,49 @@ func main() {
 			if tx.ID > 0 {
 				if err := tx.Update(db); err != nil {
 					updTags = false
-					p(err)
+					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
 				}
 			} else if err := tx.Insert(db); err != nil {
-				updTags = false
-				p(err)
+				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
 			}
 
 			if updTags {
 				var IDs []interface{}
-				if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); len(IDs) > 0 {
-					if tags, err := models.Tags(db, q.Select("id"), q.WhereIn("id IN ?", IDs...)).All(); err == nil {
-						if err := tx.SetTags(db, false, tags...); err != nil {
-							p(err)
-						}
-					} else {
-						p(err)
+				if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); err != nil {
+					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+				}
+
+				if len(IDs) > 0 {
+					if tags, err := models.Tags(db, q.Select("id"), q.WhereIn("id IN ?", IDs...)).All(); err != nil {
+						error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+					} else if err := tx.SetTags(db, false, tags...); err != nil {
+						error500(ctx, err.Error(), f("Error saving transactions %d", ID))
 					}
-				} else if err != nil {
-					p(err)
 				}
 			}
-		} else {
-			p(err)
 		}
-
 		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "SaveTransaction"
 
-	// Clone a transaction
-	app.Get("/transactions/transaction/delete/{id:string}", func(ctx context.Context) {
-		// Load transaction
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err == nil {
-			id := uint(ID)
-			if id > 0 {
-				if tx, err := models.FindTransaction(db, id); err == nil {
-					tx.Deleted = 1
-					if err := tx.Update(db); err != nil {
-						p(err)
-					}
+	// Delete one transaction
+	app.Get("/transaction/delete/{id:string}", func(ctx context.Context) {
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
+			error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
+		} else if ID > 0 {
+			if tx, err := models.FindTransaction(db, uint(ID)); err != nil {
+				error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
+			} else {
+				tx.Deleted = 1
+				if err := tx.Update(db); err != nil {
+					error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
 				}
 			}
-		} else {
-			p(err)
 		}
+
 		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "DeleteTransaction"
 
+	// =================== End of Transactions ======================
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 }
