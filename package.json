@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "inst": "yarn add --modules-folder ./assets/vendor",
+    "del": "yarn remove --modules-folder ./assets/vendor"
+  },
   "dependencies": {
-    "font-awesome": "^4.7.0"
+    "air-datepicker": "^2.2.3",
+    "bootstrap": "4.0.0-beta",
+    "font-awesome": "^4.7.0",
+    "popper.js": "1.11.0"
   }
 }
