@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
@@ -22,9 +23,9 @@ import (
 )
 
 func main() {
+	//p := fmt.Println
 	f := fmt.Sprintf
 	app := iris.New() // defaults to these
-	log := app.Logger()
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
 	// Optionally set the writer as well. Defaults to os.Stdout
@@ -115,24 +116,8 @@ func main() {
 		return time.Now()
 	})
 
-	tmpl.AddFunc("css", func(filename string) string {
-		return rv.Path("Home") + "assets/css/" + filename
-	})
-
-	tmpl.AddFunc("cssv", func(filename string) string {
-		return rv.Path("Home") + "assets/vendor/css/" + filename
-	})
-
-	tmpl.AddFunc("fontv", func(filename string) string {
-		return rv.Path("Home") + "assets/vendor/fonts/" + filename
-	})
-
-	tmpl.AddFunc("js", func(filename string) string {
-		return rv.Path("Home") + "assets/js/" + filename
-	})
-
-	tmpl.AddFunc("jsv", func(filename string) string {
-		return rv.Path("Home") + "assets/vendor/js/" + filename
+	tmpl.AddFunc("asset", func(filename string) string {
+		return rv.Path("Home") + "assets/" + filename
 	})
 
 	tmpl.AddFunc("active", func(URI string, CurrentURI string) string {
@@ -182,14 +167,13 @@ func main() {
 		ctx.View("dashboard.go.html")
 	}).Name = "Home"
 
-	// Home / Dashboard
+	// Invoices
 	app.Get("/invoices", func(ctx context.Context) {
 		// Eager loading
 		inv, err := models.Invoices(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
 		if err != nil {
 			error500(ctx, err.Error(), "Loading invoices")
 		}
-
 		ctx.ViewData("Title", "Invoices")
 		ctx.ViewData("Invoices", inv)
 		ctx.View("invoices.go.html")
@@ -204,16 +188,21 @@ func main() {
 		ctx.ViewData("Title", "Edit Invoice")
 		id := uint(ID)
 		if id > 0 {
+
 			inv, err := models.FindInvoice(db, id)
 			if err != nil {
 				error500(ctx, err.Error(), "Finding invoice: "+string(id))
 			}
+			ctx.ViewData("action", "Edit")
 			ctx.ViewData("inv", inv)
+		} else {
+			ctx.ViewData("action", "New")
 		}
+		ctx.View("invoice-form.go.html")
 	}).Name = "EditInvoice"
-	/* =================== End of Invoices ====================== */
+	// End of Invoices
 
-	/* =================== Transactions ====================== */
+	// Transactions
 	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		// Eager loading
@@ -306,16 +295,10 @@ func main() {
 			tx.TotalPrice = ctx.PostValue("TotalPrice")
 			tx.Quantity = ctx.PostValue("Quantity")
 			tx.Price = ctx.PostValue("UnitPrice")
-			if date, err := time.Parse("02 January, 2006", ctx.PostValue("Date")); err != nil {
+			if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
 				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
 			} else {
-				// Add UTC time offset to date in order to avoid the DB driver insert as -1 day
-				now := time.Now().UTC()
-				duration := time.Duration(now.Hour()) * time.Hour
-				duration += time.Duration(now.Minute()) * time.Minute
-				duration += time.Duration(now.Second()) * time.Second
-				duration += time.Duration(now.Nanosecond()) * time.Nanosecond
-				tx.Date = date.Add(duration)
+				tx.Date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
 			}
 
 			if invID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err != nil {
