@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="{{ asset "vendor/bootstrap/dist/css/bootstrap.min.css" }}">
     <link rel="stylesheet" href="{{ asset "vendor/font-awesome/css/font-awesome.min.css"}}">
+    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
     <link rel="stylesheet" href="{{ asset "css/main.css" }}">
-    {{ template "css" . }}
   </head>
   <body>
       <nav id="topbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -18,7 +18,7 @@
                 <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Settings{{.route}}</a>
+                <a class="nav-link" href="#">Settings</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Profile</a>
@@ -135,13 +135,13 @@
             </main>
           </div>
         </div>
-        <!--
-        <script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-slim.min.js"><\/script>')</script>-->
         <script src="{{ asset "vendor/jquery/dist/jquery.slim.min.js" }}"></script>
         <script src="{{ asset "vendor/popper.js/dist/umd/popper.min.js" }}"></script>
-        <script src="{{ asset "vendor/bootstrap/js/dist/tooltip.js" }}"></script>
+        <script src="{{ asset "vendor/bootstrap/dist/js/bootstrap.min.js" }}"></script>
+        <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
+        <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
         <script src="{{ asset "js/main.js" }}"></script>
-        {{ template "js" . }}
+        {{ template "js" .}}
   </body>
   </body>
 </html>

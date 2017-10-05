@@ -1,0 +1,38 @@
+<h2>{{ .action }} Invoice</h2>
+<form method="post" action="{{ if .inv }}{{ urlpath "SaveInvoice" (.inv.ID|printf "%d") }}{{ else }}{{ urlpath "SaveInvoice" "0" }}{{end}}">
+    <!--<input id="id" type="hidden" name="ID" value="0">-->
+    <div class="form-row">
+        <div class="col-5">
+            <div class="form-group">
+                <label class="form-control-label" for="description">Description</label>
+                <input type="text" class="form-control form-control" id="code" name="Code" placeholder="Code" value="{{ if .inv }}{{ .inv.Code }}{{ end }}">
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="date">Date</label>
+                <input type="text" class="form-control datepicker-here" data-language="en" data-auto-close="true" data-date-format="dd.mm.yyyy" id="date" name="Date" placeholder="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" value="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" readonly>
+            </div>
+            <div class="form-group">
+                <div><label class="form-control-label" for="type">Status</label></div>
+                <div class="btn-group" data-toggle="buttons" id="type">
+                  <label class="btn btn-sm btn-success{{with .inv -}}{{ if eq .Status "PAID" }} active focus{{ end }}{{- end}}">
+                      <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID"{{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid
+                  </label>
+                  <label class="btn btn-sm btn-warning{{with .inv -}}{{ if eq .Status "PNDG" }} active focus{{ end }}{{- end}}">
+                      <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG"{{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending
+                  </label>
+                  <label class="btn btn-sm btn-danger{{with .inv -}}{{ if eq .Status "CANC" }} active focus{{ end }}{{- end}}">
+                      <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC"{{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}><i class="fa fa-ban" aria-hidden="true"></i> Canceled
+                  </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-control-label" for="note">Note</label>
+                <textarea class="form-control" id="note" name="Note" rows="2">{{ with .inv }}{{ .Note }}{{ end }}</textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-info btn-sm"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
+            </div>
+        </div>
+    </div>
+</form>

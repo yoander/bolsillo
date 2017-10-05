@@ -30,9 +30,9 @@
         </td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
-          <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-          <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-url="{{urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Tooltip on bottom"><i class="fa fa-clone" aria-hidden="true"></i></a>
-          <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+          <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
+          <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
         </div>
       </td>
       </tr>

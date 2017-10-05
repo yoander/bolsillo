@@ -52,7 +52,7 @@ func main() {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
 		ctx.ViewData("message", ctx.Values().GetString("message"))
-		ctx.View("error.go.html")
+		ctx.View("error.gohtml")
 	})
 
 	error500 := func(ctx context.Context, msg string, header string) {
@@ -68,7 +68,7 @@ func main() {
 
 	rv := router.NewRoutePathReverser(app)
 
-	tmpl := iris.HTML("./views", ".html").Layout("layout.go.html")
+	tmpl := iris.HTML("./views", ".gohtml").Layout("layout.gohtml")
 	tmpl.Reload(true) // reload templates on each request (development mode)
 	// default template funcs are:
 	//
@@ -164,7 +164,7 @@ func main() {
 	app.Get("/", func(ctx context.Context) {
 		// Eager loading
 		ctx.ViewData("Title", "Dashboard")
-		ctx.View("dashboard.go.html")
+		ctx.View("dashboard.gohtml")
 	}).Name = "Home"
 
 	// Invoices
@@ -176,10 +176,10 @@ func main() {
 		}
 		ctx.ViewData("Title", "Invoices")
 		ctx.ViewData("Invoices", inv)
-		ctx.View("invoices.go.html")
+		ctx.View("invoices.gohtml")
 	}).Name = "ListInvoices"
 
-	// List of invoices
+	// Edit invoice
 	app.Get("/invoice/edit/{id:string}", func(ctx context.Context) {
 		ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64)
 		if err != nil {
@@ -213,7 +213,7 @@ func main() {
 
 		ctx.ViewData("Title", "Transactions")
 		ctx.ViewData("Transactions", tran)
-		ctx.View("transactions.go.html")
+		ctx.View("transactions.gohtml")
 	}).Name = "ListTransactions"
 
 	// Edit one transaction
@@ -252,10 +252,10 @@ func main() {
 			ctx.ViewData("Units", units)
 		}
 
-		ctx.View("transaction-form.go.html")
+		ctx.View("transaction-form.gohtml")
 	}).Name = "EditTransaction" // Also New
 
-	// Clone a transaction
+	// Clone transaction
 	app.Get("/transaction/clone/{id:string}", func(ctx context.Context) {
 		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
 			error500(ctx, err.Error(), "Error Loading Transactions")

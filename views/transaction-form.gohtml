@@ -1,6 +1,3 @@
-{{ define "css" }}
-<link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
-{{ end }}
 <h2>New Transaction</h2>
 <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
     <input id="tags" type="hidden" name="Tags" value="[{{ if .txTags }}{{ $taglen := dec (len .txTags) 1 }}{{ range $i, $_ := .txTags }}{{ .ID|printf "\"%d\"" }}{{ if lt $i $taglen }},{{end}}{{ end }}{{end}}]">
@@ -28,10 +25,10 @@
                 <label class="form-control-label" for="type">Type</label><br>
                 <div class="btn-group" data-toggle="buttons" id="type">
                     <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "EXP" }} active focus{{ end }}{{- end}}">
-                        <input type="radio" id="type-get" name="Type" autocomplete="off" value="EXP"{{with .tx -}}{{ if eq .Type "EXP" }} checked{{ end }}{{- end}}> Expense
+                        <input type="radio" id="type-get" name="Type" autocomplete="off" value="EXP"{{with .tx -}}{{ if eq .Type "EXP" }} checked{{ end }}{{- end}}><i class="fa fa-minus-circle" aria-hidden="true"></i> Expense
                     </label>
                     <label class="btn btn-sm btn-success{{with .tx -}}{{ if eq .Type "INC" }} active focus{{ end }}{{- end}}">
-                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="INC"{{with .tx -}}{{ if eq .Type "INC" }} checked{{ end }}{{- end}}> Income
+                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="INC"{{with .tx -}}{{ if eq .Type "INC" }} checked{{ end }}{{- end}}><i class="fa fa-plus-circle" aria-hidden="true"></i> Income
                     </label>
                 </div>
             </div>
@@ -87,8 +84,6 @@
         </div>
     </div>
 </form>
-{{define "js"}}
-<script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-<script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-<script src="{{ asset "js/tags.js" }}"></script>
-{{end}}
+{{ define "js" }}
+  <script src="{{ asset "js/tags.js" }}"></script>
+{{ end }}
