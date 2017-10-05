@@ -96,3 +96,16 @@ table#invoices thead th:nth-child(4),
 table#invoices tbody td:nth-child(4) {
   text-align: center;
 }
+
+.btn-group .btn {
+  cursor: pointer;
+  _cursor: hand;
+}
+
+.btn-group .active::after  {
+  content: "✔"
+}
+
+.btn-group .focus {
+  box-shadow: none;
+}
