@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"reflect"
 	"strconv"
 	"strings"
@@ -188,7 +189,6 @@ func main() {
 		ctx.ViewData("Title", "Edit Invoice")
 		id := uint(ID)
 		if id > 0 {
-
 			inv, err := models.FindInvoice(db, id)
 			if err != nil {
 				error500(ctx, err.Error(), "Finding invoice: "+string(id))
@@ -198,8 +198,64 @@ func main() {
 		} else {
 			ctx.ViewData("action", "New")
 		}
-		ctx.View("invoice-form.go.html")
+		ctx.View("invoice-form.gohtml")
 	}).Name = "EditInvoice"
+
+	// Clone invoice
+	app.Get("/invoice/clone/{id:string}", func(ctx context.Context) {
+		id := ctx.Params().Get("id")
+		log.Print(f("Clonning invoice %s", id))
+		if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
+			error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+		} else if ID > 0 {
+			if inv, err := models.FindInvoice(db, uint(ID)); err != nil {
+				error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+			} else {
+				now := time.Now().Local()
+				inv.ID = 0
+				inv.Code = strconv.Itoa(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+				inv.Date = now
+				inv.CreatedAt = now
+				inv.UpdatedAt = now
+				if err := inv.Insert(db); err != nil {
+					error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+				}
+				log.Println(inv)
+			}
+
+		} else {
+			error500(ctx, f("Invoice %s could not be clonned", ID), f("Error clonning invoice %s", ID))
+		}
+		ctx.Redirect(rv.Path("ListInvoices"))
+	}).Name = "CloneInvoice"
+
+	// Save invoice
+	app.Post("/invoice/save/{id:string}", func(ctx context.Context) {
+		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
+			error500(ctx, err.Error(), f("Error saving invoice %d", ID))
+		} else {
+			var inv models.Invoice
+			inv.ID = uint(ID)
+			//inv.PersonID = 1
+			inv.Status = ctx.PostValue("Status")
+			inv.Code = ctx.PostValue("Code")
+			inv.Note = ctx.PostValue("Note")
+			if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
+				error500(ctx, err.Error(), f("Error saving invoice %d", ID))
+			} else {
+				inv.Date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
+			}
+
+			if inv.ID > 0 {
+				if err := inv.Update(db); err != nil {
+					error500(ctx, err.Error(), f("Error saving invoice %d", ID))
+				}
+			} else if err := inv.Insert(db); err != nil {
+				error500(ctx, err.Error(), f("Error saving invoice %d", ID))
+			}
+		}
+		ctx.Redirect(rv.Path("ListInvoices"))
+	}).Name = "SaveInvoice"
 	// End of Invoices
 
 	// Transactions
