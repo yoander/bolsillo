@@ -1,6 +1,6 @@
 <h2>New Transaction</h2>
 <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
-    <input id="tags" type="hidden" name="Tags" value="[{{ if .txTags }}{{ $taglen := dec (len .txTags) 1 }}{{ range $i, $_ := .txTags }}{{ .ID|printf "\"%d\"" }}{{ if lt $i $taglen }},{{end}}{{ end }}{{end}}]">
+    <input id="tags" type="hidden" name="Tags" value="[{{ with $.txTags }}{{ join_tags . "id" }}{{ end }}]">
     <!--<input id="id" type="hidden" name="ID" value="0">-->
     <div class="form-row">
         <div class="col-5">
@@ -12,12 +12,12 @@
                 <label class="form-control-label" for="date">Date</label>
                 <input type="text" class="form-control datepicker-here" data-language="en" data-auto-close="true" data-date-format="dd.mm.yyyy" id="date" name="Date" placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" value="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" readonly>
             </div>
-            <div class="form-group col-3 pl-0">
+            <div class="form-group">
                 <label class="form-control-label" for="invoice">Invoice</label>
                 <select class="custom-select form-control" id="invoice" name="Invoice">
                     <option value="0">Select one item</option>
-                    {{ range $_, $_ := .invoices }}
-                    <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }} title="{{ date .Date "02-01-2006" }}/{{ .Note }}">{{.Code}}</option>
+                    {{ range .invoices }}
+                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
                     {{ end }}
                 </select>
             </div>
@@ -25,10 +25,10 @@
                 <label class="form-control-label" for="type">Type</label><br>
                 <div class="btn-group" data-toggle="buttons" id="type">
                     <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Type "EXP" }} active focus{{ end }}{{- end}}">
-                        <input type="radio" id="type-get" name="Type" autocomplete="off" value="EXP"{{with .tx -}}{{ if eq .Type "EXP" }} checked{{ end }}{{- end}}><i class="fa fa-minus-circle" aria-hidden="true"></i> Expense
+                        <input type="radio" id="type-get" name="Type" autocomplete="off" value="EXP"{{with .tx -}}{{ if eq .Type "EXP" }} checked{{ end }}{{- end}}><i class="fa fa-minus" aria-hidden="true"></i>
                     </label>
-                    <label class="btn btn-sm btn-success{{with .tx -}}{{ if eq .Type "INC" }} active focus{{ end }}{{- end}}">
-                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="INC"{{with .tx -}}{{ if eq .Type "INC" }} checked{{ end }}{{- end}}><i class="fa fa-plus-circle" aria-hidden="true"></i> Income
+                    <label class="btn btn-sm btn-success{{ with .tx -}}{{ if eq .Type "INC" }} active focus{{ end }}{{- end}}">
+                        <input type="radio" id="type-put" name="Type" autocomplete="off" value="INC"{{with .tx -}}{{ if eq .Type "INC" }} checked{{ end }}{{- end}}><i class="fa fa-plus" aria-hidden="true"></i>
                     </label>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                 <label class="form-control-label" for="unit">Unit</label>
                 <select class="form-control" id="unit" name="Unit">
                     <option value="0">Select one item</option>
-                    {{ range $_, $_ := .Units }}
+                    {{ range .Units }}
                     <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.UnitID.Uint8 .ID }} selected="selected"{{ end }}{{ end }}>{{.Name}}</option>
                     {{ end }}
                 </select>
@@ -60,17 +60,16 @@
                 </div>
             </div>
             <div class="form-group">
-                <a class="form-control-label">
-                    Tags
-                </a>
+                <label class="form-control-label" for="unit">Tags</label>
                 <div>
-                    {{ range $_, $_ := .Tags }}
-                        {{if tag_exists .ID $.txTags }}
-                            <span id="{{.ID}}" class="tag badge badge-info" style="cursor: pointer;">✔&nbsp;{{.Tag}}&nbsp;</span>
-                        {{else}}
-                            <span id="{{.ID}}" class="tag badge badge-danger" style="cursor: pointer;">&nbsp;{{.Tag}}&nbsp;</span>
-                        {{end}}
+                  <input type="text" class="flexdatalist form-control" data-min-length="1" multiple="multiple" list="tag-list" data-selection-required="true" value="{{ join_tags $.txTags "tag" }}">
+                  {{ with .Tags }}
+                    <datalist id="tag-list">
+                    {{ range .}}
+                        <option value="{{ .ID }}" data-tag="{{ .Tag }}">{{ .Tag }}</option>
                     {{ end }}
+                    </datalist>
+                  {{ end }}
                 </div>
             </div>
             <div class="form-group">

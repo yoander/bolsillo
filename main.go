@@ -150,6 +150,22 @@ func main() {
 		return false
 	})
 
+	tmpl.AddFunc("join_tags", func(tags models.TagSlice, joinField string) string {
+		len := len(tags) - 1
+		s := ""
+		for i, t := range tags {
+			if joinField == "id" {
+				s += strconv.Itoa(int(t.ID))
+			} else if joinField == "tag" {
+				s += t.Tag
+			}
+			if i < len {
+				s += ","
+			}
+		}
+		return s
+	})
+
 	app.RegisterView(tmpl)
 
 	// Register static content
@@ -258,7 +274,9 @@ func main() {
 	}).Name = "SaveInvoice"
 	// End of Invoices
 
-	// Transactions
+	//
+	// =================== Transactions ======================
+	//
 	// List of transactions
 	app.Get("/transactions", func(ctx context.Context) {
 		// Eager loading
@@ -282,7 +300,7 @@ func main() {
 				error500(ctx, err.Error(), f("Error editing transaction %s", ID))
 			} else {
 				ctx.ViewData("tx", tx)
-				if txTags, err := tx.Tags(db, q.Select("ID")).All(); err != nil {
+				if txTags, err := tx.Tags(db, q.Select("id, tag")).All(); err != nil {
 					error500(ctx, err.Error(), f("Error editing transaction %s", ID))
 				} else {
 					ctx.ViewData("txTags", txTags)
@@ -301,7 +319,6 @@ func main() {
 		} else {
 			ctx.ViewData("Tags", tags)
 		}
-
 		if units, err := models.Units(db, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err != nil {
 			error500(ctx, err.Error(), f("Error editing transaction %s", id))
 		} else {
@@ -415,8 +432,22 @@ func main() {
 
 		ctx.Redirect(rv.Path("ListTransactions"))
 	}).Name = "DeleteTransaction"
-
+	//
 	// =================== End of Transactions ======================
+	//
+
+	//
+	// =================== Tags ======================
+	//
+	app.Get("tags.json", func(ctx context.Context) {
+		// Load tags
+		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err != nil {
+			error500(ctx, err.Error(), f("Error loading tags as %s", "json"))
+		} else {
+			ctx.JSON(tags)
+		}
+	}).Name = "TagsJSON"
+
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
 }

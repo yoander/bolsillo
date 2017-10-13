@@ -20,13 +20,19 @@
       <tr>
         <td>{{ inc $i 1 }}</td>
         <td>{{ .Description }}</td>
-        <td>{{ if eq .Type "EXP" }}<i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>{{ else }}Income{{ end }}</td>
+        <td>
+          {{ if eq .Type "EXP" }}
+            <a class="tag badge badge-danger" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+          {{ else }}
+            <a class="tag badge badge-danger" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
+          {{ end }}
+        </td>
         <td>
           {{ .TotalPrice }}
         </td>
         <td>{{ date .Date "02.01.2006" }}</td>
         <!--<td>{{ .Note }}</td>-->
-        <td>{{ range $j, $t := .R.Tags }}<a class="tag badge badge-secondary" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{.Tag}}</a> {{ end }}
+        <td>{{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}
         </td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">

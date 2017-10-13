@@ -1,23 +1,22 @@
 $(document).ready(function () {
-    $('.tag').click(function () {
-        var tag = $(this);
-        var id = tag.attr('id')
-        console.log("ID", id)
+  $('input.flexdatalist').on('change:flexdatalist after:flexdatalist.remove', function(event, set) {
+    var tags = undefined;
+    var input = undefined;
+    if (event.type == 'change:flexdatalist') {
+      if (set.value != undefined) {
         var input = $('input#tags');
         var tags = JSON.parse(input.val());
-        if (tag.hasClass('badge-danger')) {
-            tags.push(id);
-            tag.removeClass('badge-danger').addClass('badge-info').html('✔' + tag.html());
-        } else if (tag.hasClass('badge-info')) {
-            tags.splice(tags.indexOf(id), 1);
-            tag.removeClass('badge-info').addClass('badge-danger').html(tag.html().replace('✔', ''));
-        }
-        input.val(JSON.stringify(tags));
-    });
+        var id = $('datalist#tag-list option[data-tag="' + set.value + '"]').val();
+        tags.push(id);
+      }
+    } else if (event.type == 'after:flexdatalist') {
+      var input = $('input#tags');
+      var tags = JSON.parse(input.val());
+      var id = $('datalist#tag-list option[data-tag="' + $(set).children(':first').text() + '"]').val();
+      tags.splice(tags.indexOf(id), 1);
+    }
+    if ((tags != undefined) && (input != undefined)) {
+      input.val(JSON.stringify(tags));
+    }
+  })
 });
-/*
-$(document).on('click', '#dropdownMenuButton span a', function (e) {
-    console.log('PASO');
-    console.log(e.which);
-});
-*/
