@@ -1,4 +1,4 @@
-<h2>New Transaction</h2>
+<h2>{{ .action }} Transaction</h2>
 <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
     <input id="tags" type="hidden" name="Tags" value="[{{ with $.txTags }}{{ join_tags . "id" }}{{ end }}]">
     <!--<input id="id" type="hidden" name="ID" value="0">-->

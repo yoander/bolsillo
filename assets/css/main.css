@@ -137,3 +137,7 @@ ul.focus {
     background: #17a2b8;
     color: #fff;
 }
+
+.info {
+  font-size: 0.8rem;
+}
