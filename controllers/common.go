@@ -5,10 +5,14 @@ import (
 	"fmt"
 
 	"github.com/kataras/iris/context"
+	"github.com/kataras/iris/core/router"
 )
 
 // DB Connection
 var DB *sql.DB
+
+// ReverseRouter iris
+var ReverseRouter *router.RoutePathReverser
 
 var f = fmt.Sprintf
 

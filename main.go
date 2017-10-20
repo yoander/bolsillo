@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"reflect"
 	"strconv"
 	"strings"
@@ -28,6 +27,8 @@ func main() {
 	//p := fmt.Println
 	f := fmt.Sprintf
 	app := iris.New() // defaults to these
+	rv := router.NewRoutePathReverser(app)
+	controllers.ReverseRouter = rv
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
 	controllers.DB = db
@@ -68,8 +69,6 @@ func main() {
 
 	app.Use(recover.New())
 	app.Use(logger.New())
-
-	rv := router.NewRoutePathReverser(app)
 
 	tmpl := iris.HTML("./views", ".gohtml").Layout("layout.gohtml")
 	tmpl.Reload(true) // reload templates on each request (development mode)
@@ -195,32 +194,7 @@ func main() {
 	app.Get("/invoice/edit/{id:string}", controllers.Invoices.Read).Name = "EditInvoice"
 
 	// Clone invoice
-	app.Get("/invoice/clone/{id:string}", func(ctx context.Context) {
-		id := ctx.Params().Get("id")
-		log.Print(f("Clonning invoice %s", id))
-		if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
-			error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
-		} else if ID > 0 {
-			if inv, err := models.FindInvoice(db, uint(ID)); err != nil {
-				error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
-			} else {
-				now := time.Now().Local()
-				inv.ID = 0
-				inv.Code = strconv.Itoa(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
-				inv.Date = now
-				inv.CreatedAt = now
-				inv.UpdatedAt = now
-				if err := inv.Insert(db); err != nil {
-					error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
-				}
-				log.Println(inv)
-			}
-
-		} else {
-			error500(ctx, f("Invoice %s could not be clonned", ID), f("Error clonning invoice %s", ID))
-		}
-		ctx.Redirect(rv.Path("ListInvoices"))
-	}).Name = "CloneInvoice"
+	app.Get("/invoice/clone/{id:string}", controllers.Invoices.Clone).Name = "CloneInvoice"
 
 	// Save invoice
 	app.Post("/invoice/save/{id:string}", func(ctx context.Context) {

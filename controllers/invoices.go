@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"log"
+	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/kataras/iris/context"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
@@ -42,6 +45,34 @@ func (*invoice) List(ctx context.Context) {
 	ctx.ViewData("Title", "Invoices")
 	ctx.ViewData("Invoices", inv)
 	ctx.View("invoices.gohtml")
+}
+
+// Clone invoices
+func (*invoice) Clone(ctx context.Context) {
+	id := ctx.Params().Get("id")
+	log.Print(f("Clonning invoice %s", id))
+	if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
+		error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+	} else if ID > 0 {
+		if inv, err := models.FindInvoice(DB, uint(ID)); err != nil {
+			error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+		} else {
+			now := time.Now().Local()
+			inv.ID = 0
+			inv.Code = strconv.Itoa(rand.New(rand.NewSource(time.Now().UnixNano())).Int())
+			inv.Date = now
+			inv.CreatedAt = now
+			inv.UpdatedAt = now
+			if err := inv.Insert(DB); err != nil {
+				error500(ctx, err.Error(), f("Error clonning invoice %s", ID))
+			}
+			log.Println(inv)
+		}
+
+	} else {
+		error500(ctx, f("Invoice %s could not be clonned", ID), f("Error clonning invoice %s", ID))
+	}
+	ctx.Redirect(ReverseRouter.Path("ListInvoices"))
 }
 
 // DumpAsJSON format
