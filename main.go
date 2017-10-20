@@ -20,6 +20,7 @@ import (
 	"github.com/kataras/iris/core/router"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
+	"github.com/yoander/bolsillo/controllers"
 	"github.com/yoander/bolsillo/models"
 )
 
@@ -29,6 +30,7 @@ func main() {
 	app := iris.New() // defaults to these
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
+	controllers.DB = db
 	// Optionally set the writer as well. Defaults to os.Stdout
 	//fh, err := os.Create("debug.txt")
 	//boil.DebugWriter = fh
@@ -184,38 +186,13 @@ func main() {
 		ctx.View("dashboard.gohtml")
 	}).Name = "Home"
 
-	// Invoices
-	app.Get("/invoices", func(ctx context.Context) {
-		// Eager loading
-		inv, err := models.Invoices(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
-		if err != nil {
-			error500(ctx, err.Error(), "Loading invoices")
-		}
-		ctx.ViewData("Title", "Invoices")
-		ctx.ViewData("Invoices", inv)
-		ctx.View("invoices.gohtml")
-	}).Name = "ListInvoices"
+	//
+	// =================== Invoices ======================
+	// List
+	app.Get("/invoices", controllers.Invoices.List).Name = "ListInvoices"
 
-	// Edit invoice
-	app.Get("/invoice/edit/{id:string}", func(ctx context.Context) {
-		ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64)
-		if err != nil {
-			error500(ctx, err.Error(), "Editing invoice")
-		}
-		ctx.ViewData("Title", "Edit Invoice")
-		id := uint(ID)
-		if id > 0 {
-			inv, err := models.FindInvoice(db, id)
-			if err != nil {
-				error500(ctx, err.Error(), "Finding invoice: "+string(id))
-			}
-			ctx.ViewData("action", "Edit")
-			ctx.ViewData("inv", inv)
-		} else {
-			ctx.ViewData("action", "New")
-		}
-		ctx.View("invoice-form.gohtml")
-	}).Name = "EditInvoice"
+	// Edit
+	app.Get("/invoice/edit/{id:string}", controllers.Invoices.Read).Name = "EditInvoice"
 
 	// Clone invoice
 	app.Get("/invoice/clone/{id:string}", func(ctx context.Context) {
@@ -296,6 +273,7 @@ func main() {
 		if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
 			error500(ctx, err.Error(), f("Error editing transaction %s", ID))
 		} else if ID > 0 {
+			ctx.ViewData("action", "Edit")
 			if tx, err := models.FindTransaction(db, uint(ID)); err != nil {
 				error500(ctx, err.Error(), f("Error editing transaction %s", ID))
 			} else {
@@ -306,6 +284,8 @@ func main() {
 					ctx.ViewData("txTags", txTags)
 				}
 			}
+		} else {
+			ctx.ViewData("action", "New")
 		}
 
 		if invoices, err := models.Invoices(db, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err != nil {
@@ -438,15 +418,11 @@ func main() {
 
 	//
 	// =================== Tags ======================
+	app.Get("tags.json", controllers.Tags.DumpAsJSON).Name = "TagsJSON"
+
 	//
-	app.Get("tags.json", func(ctx context.Context) {
-		// Load tags
-		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err != nil {
-			error500(ctx, err.Error(), f("Error loading tags as %s", "json"))
-		} else {
-			ctx.JSON(tags)
-		}
-	}).Name = "TagsJSON"
+	// =================== Units ======================
+	app.Get("units.json", controllers.Units.DumpAsJSON).Name = "UnitsJSON"
 
 	// http://localhost:8080
 	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
