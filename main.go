@@ -187,43 +187,18 @@ func main() {
 
 	//
 	// =================== Invoices ======================
+	//
 	// List
 	app.Get("/invoices", controllers.Invoices.List).Name = "ListInvoices"
 
 	// Edit
 	app.Get("/invoice/edit/{id:string}", controllers.Invoices.Read).Name = "EditInvoice"
 
-	// Clone invoice
+	// Clone
 	app.Get("/invoice/clone/{id:string}", controllers.Invoices.Clone).Name = "CloneInvoice"
 
-	// Save invoice
-	app.Post("/invoice/save/{id:string}", func(ctx context.Context) {
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
-			error500(ctx, err.Error(), f("Error saving invoice %d", ID))
-		} else {
-			var inv models.Invoice
-			inv.ID = uint(ID)
-			//inv.PersonID = 1
-			inv.Status = ctx.PostValue("Status")
-			inv.Code = ctx.PostValue("Code")
-			inv.Note = ctx.PostValue("Note")
-			if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
-				error500(ctx, err.Error(), f("Error saving invoice %d", ID))
-			} else {
-				inv.Date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
-			}
-
-			if inv.ID > 0 {
-				if err := inv.Update(db); err != nil {
-					error500(ctx, err.Error(), f("Error saving invoice %d", ID))
-				}
-			} else if err := inv.Insert(db); err != nil {
-				error500(ctx, err.Error(), f("Error saving invoice %d", ID))
-			}
-		}
-		ctx.Redirect(rv.Path("ListInvoices"))
-	}).Name = "SaveInvoice"
-	// End of Invoices
+	// Save
+	app.Post("/invoice/save/{id:string}", controllers.Invoices.Save).Name = "SaveInvoice"
 
 	//
 	// =================== Transactions ======================
