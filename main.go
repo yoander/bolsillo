@@ -200,6 +200,9 @@ func main() {
 	// Save
 	app.Post("/invoice/save/{id:string}", controllers.Invoices.Save).Name = "SaveInvoice"
 
+	// Save
+	app.Get("/invoice/delete/{id:string}", controllers.Invoices.SofDelete).Name = "DeleteInvoice"
+
 	//
 	// =================== Transactions ======================
 	//

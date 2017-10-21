@@ -23,7 +23,6 @@ func error500(ctx context.Context, msg string, header string) {
 	ctx.Values().Set("message", msg)
 }
 
-// CRUD unexported
 type crud interface {
 	Create(ctx context.Context)
 	Read(ctx context.Context)
@@ -31,10 +30,10 @@ type crud interface {
 	Delete(ctx context.Context)
 }
 
-// Actions unexported
-type Actions interface {
+type actions interface {
 	crud
 	List(ctx context.Context)
 	Clone(ctx context.Context)
+	Save(ctx context.Context)
 	DumpAsJSON(ctx context.Context)
 }

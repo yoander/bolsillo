@@ -73,6 +73,7 @@ func (*invoice) Clone(ctx context.Context) {
 	ctx.Redirect(ReverseRouter.Path("ListInvoices"))
 }
 
+// Save one transaction
 func (*invoice) Save(ctx context.Context) {
 	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
 		error500(ctx, err.Error(), f("Error saving invoice %d", ID))
@@ -97,6 +98,23 @@ func (*invoice) Save(ctx context.Context) {
 			error500(ctx, err.Error(), f("Error saving invoice %d", ID))
 		}
 	}
+	ctx.Redirect(ReverseRouter.Path("ListInvoices"))
+}
+
+func (*invoice) SofDelete(ctx context.Context) {
+	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
+		error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
+	} else if ID > 0 {
+		if tx, err := models.FindInvoice(DB, uint(ID)); err != nil {
+			error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
+		} else {
+			tx.Deleted = 1
+			if err := tx.Update(DB); err != nil {
+				error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
+			}
+		}
+	}
+
 	ctx.Redirect(ReverseRouter.Path("ListInvoices"))
 }
 

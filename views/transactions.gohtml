@@ -29,9 +29,9 @@
         </td>
         <td>
           {{ if eq .Type "EXP" }}
-            <a class="tag badge badge-danger" href="#"><i class="fa fa-minus" aria-hidden="true"></i></a>
+            <a class="badge badge-pill badge-danger" href="#">Expenses</a>
           {{ else }}
-            <a class="tag badge badge-danger" href="#"><i class="fa fa-plus" aria-hidden="true"></i></a>
+            <a class="badge badge-pill badge-success" href="#">Income</a>
           {{ end }}
         </td>
         <td>{{ .Price }}</td>
