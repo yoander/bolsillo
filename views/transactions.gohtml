@@ -33,6 +33,9 @@
           {{ else }}
             <a class="badge badge-pill badge-success" href="#">Income</a>
           {{ end }}
+          {{ if eq .IsExpensive 1 }}
+            <a class="badge badge-pill badge-warning" href="#">Expensive</a>
+          {{ end }}
         </td>
         <td>{{ .Price }}</td>
         <td>{{ .TotalPrice }}</td>

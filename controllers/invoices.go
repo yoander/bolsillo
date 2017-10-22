@@ -101,6 +101,7 @@ func (*invoice) Save(ctx context.Context) {
 	ctx.Redirect(ReverseRouter.Path("ListInvoices"))
 }
 
+// SofDelete mark an invoice as deleted
 func (*invoice) SofDelete(ctx context.Context) {
 	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
 		error500(ctx, err.Error(), f("Error deleting transactions %d", ID))

@@ -318,6 +318,12 @@ func main() {
 				tx.UnitID.SetValid(uint8(unitID))
 			}
 
+			if isExpensive, err := strconv.ParseUint(ctx.PostValue("IsExpensive"), 10, 8); err != nil {
+				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+			} else {
+				tx.IsExpensive = int8(isExpensive)
+			}
+
 			updTags := true
 
 			if tx.ID > 0 {
