@@ -55,7 +55,13 @@ func main() {
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
-		ctx.ViewData("message", ctx.Values().GetString("message"))
+		message := ctx.Values().GetString("message")
+		if message == "" {
+			message = "Internal Server error"
+		}
+
+		ctx.ViewData("message", message)
+
 		ctx.View("error.gohtml")
 	})
 
@@ -376,7 +382,20 @@ func main() {
 
 	//
 	// =================== Tags ======================
+	//
 	app.Get("tags.json", controllers.Tags.DumpAsJSON).Name = "TagsJSON"
+
+	// List
+	app.Get("/tags", controllers.Tags.List).Name = "ListTags"
+
+	// Edit
+	app.Get("/tag/edit/{id:string}", controllers.Tags.Read).Name = "EditTag"
+
+	// Save
+	app.Post("/tag/save/{id:string}", controllers.Tags.Save).Name = "SaveTag"
+
+	// Save
+	app.Get("/tag/delete/{id:string}", controllers.Tags.Delete).Name = "DeleteTag"
 
 	//
 	// =================== Units ======================
