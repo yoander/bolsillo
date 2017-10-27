@@ -1,6 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Yantramanav');
-/*@import url('https://fonts.googleapis.com/css?family=Poppins');*/
-
 /*
  * Base structure
  */
@@ -136,6 +134,13 @@ ul.focus {
 .flexdatalist-multiple li.value {
     background: #17a2b8;
     color: #fff;
+    display: inline-block;
+    font-size: 100%;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
 }
 
 .info {
