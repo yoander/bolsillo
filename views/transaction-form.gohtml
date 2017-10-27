@@ -62,7 +62,7 @@
             </div>
             <div class="form-group">
               <label class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" name="IsExpensive" value="1" {{ if eq .tx.IsExpensive 1 }}checked{{ end }}>
+                <input type="checkbox" class="custom-control-input" name="IsExpensive" value="1" {{ with .tx }}{{ if eq .IsExpensive 1 }}checked{{ end }}{{ end }}>
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description">Is expensive</span>
               </label>

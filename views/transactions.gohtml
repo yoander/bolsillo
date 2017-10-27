@@ -33,15 +33,12 @@
           {{ else }}
             <a class="badge badge-pill badge-success" href="#">Income</a>
           {{ end }}
-          {{ if eq .IsExpensive 1 }}
-            <a class="badge badge-pill badge-warning" href="#">Expensive</a>
-          {{ end }}
         </td>
         <td>{{ .Price }}</td>
         <td>{{ .TotalPrice }}</td>
         <td>{{ date .Date "02.01.2006" }}</td>
-        <!--<td>{{ .Note }}</td>-->
-        <td>{{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}
+        <td>
+          {{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}{{ if eq .IsExpensive 1 }}<a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>{{ end }}
         </td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
