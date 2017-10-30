@@ -3,44 +3,44 @@
 <table id="transactions" class="table table-responsive table-striped table-sm">
   <thead>
     <tr>
-      <th>#</th>
-      <th>Description</th>
-      <th>Type</th>
-      <th>Unit Price </th>
-      <th>
-        <section>Total Price</section>
-        <section class="info text-secondary">{{ $total_price }}</section>
+      <th style="width:5%">#</th>
+      <th style="width:30%">Description</th>
+      <th style="width:10%">Type</th>
+      <th style="width:10%">Unit Price </th>
+      <th style="width:10%">
+        <div>Total Price</div>
+        <div class="info text-secondary">{{ $total_price }}</div>
       </th>
-      <th>Date</th>
+      <th style="width:10%">Date</th>
       <!--<th>Note</th>-->
-      <th>Tags</th>
-      <th></th>
+      <th style="width:25%">Tags</th>
+      <th style="width:10%"></th>
     </tr>
   </thead>
   <tbody>
       {{ range $i, $_ := .Transactions }}
       <tr>
-        <td>{{ inc $i 1 }}</td>
-        <td>
-          <section>{{ .Description }}</section>
+        <td style="width:5%">{{ inc $i 1 }}</td>
+        <td style="width:30%">
+          <div>{{ .Description }}</div>
           {{ with .Note }}
-            <section class="info text-secondary">{{ . }}</section>
+          <div class="info text-secondary">{{ . }}</div>
           {{ end }}
         </td>
-        <td>
+        <td style="width:10%">
           {{ if eq .Type "EXP" }}
             <a class="badge badge-pill badge-danger" href="#">Expenses</a>
           {{ else }}
             <a class="badge badge-pill badge-success" href="#">Income</a>
           {{ end }}
         </td>
-        <td>{{ .Price }}</td>
-        <td>{{ .TotalPrice }}</td>
-        <td>{{ date .Date "02.01.2006" }}</td>
-        <td>
+        <td style="width:10%">{{ .Price }}</td>
+        <td style="width:10%">{{ .TotalPrice }}</td>
+        <td style="width:10%">{{ date .Date "02.01.2006" }}</td>
+        <td style="width:25%">
           {{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}{{ if eq .IsExpensive 1 }}<a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>{{ end }}
         </td>
-        <td>
+        <td style="width:10%">
           <div class="btn-group" role="group" aria-label="Basic example">
           <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
           <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
