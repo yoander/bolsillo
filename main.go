@@ -2,17 +2,13 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
-	"fmt"
 	"log"
 	"reflect"
 	"strconv"
-	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/volatiletech/sqlboiler/boil"
-	q "github.com/volatiletech/sqlboiler/queries/qm"
 
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
@@ -25,7 +21,7 @@ import (
 
 func main() {
 	//p := fmt.Println
-	f := fmt.Sprintf
+	//f := fmt.Sprintf
 	app := iris.New() // defaults to these
 	rv := router.NewRoutePathReverser(app)
 	controllers.ReverseRouter = rv
@@ -64,12 +60,6 @@ func main() {
 
 		ctx.View("error.gohtml")
 	})
-
-	error500 := func(ctx context.Context, msg string, header string) {
-		ctx.StatusCode(500)
-		ctx.Values().Set("header", header)
-		ctx.Values().Set("message", msg)
-	}
 
 	boil.SetLocation(time.Local)
 
@@ -213,172 +203,19 @@ func main() {
 	// =================== Transactions ======================
 	//
 	// List of transactions
-	app.Get("/transactions", func(ctx context.Context) {
-		// Eager loading
-		tran, err := models.Transactions(db, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC"), q.Load("Tags")).All()
-		if err != nil {
-			error500(ctx, err.Error(), "Error Loading Transactions")
-		}
-
-		ctx.ViewData("Title", "Transactions")
-		ctx.ViewData("Transactions", tran)
-		ctx.View("transactions.gohtml")
-	}).Name = "ListTransactions"
+	app.Get("/transactions", controllers.Transactions.List).Name = "ListTransactions"
 
 	// Edit one transaction
-	app.Get("/transaction/edit/{id:string}", func(ctx context.Context) {
-		id := ctx.Params().Get("id")
-		if ID, err := strconv.ParseUint(id, 10, 64); err != nil {
-			error500(ctx, err.Error(), f("Error editing transaction %s", ID))
-		} else if ID > 0 {
-			ctx.ViewData("action", "Edit")
-			if tx, err := models.FindTransaction(db, uint(ID)); err != nil {
-				error500(ctx, err.Error(), f("Error editing transaction %s", ID))
-			} else {
-				ctx.ViewData("tx", tx)
-				if txTags, err := tx.Tags(db, q.Select("id, tag")).All(); err != nil {
-					error500(ctx, err.Error(), f("Error editing transaction %s", ID))
-				} else {
-					ctx.ViewData("txTags", txTags)
-				}
-			}
-		} else {
-			ctx.ViewData("action", "New")
-		}
-
-		if invoices, err := models.Invoices(db, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err != nil {
-			error500(ctx, err.Error(), f("Error editing transaction %s", id))
-		} else {
-			ctx.ViewData("invoices", invoices)
-		}
-		// Load tags
-		if tags, err := models.Tags(db, q.Select("id", "tag"), q.OrderBy("tag ASC")).All(); err != nil {
-			error500(ctx, err.Error(), f("Error editing transaction %s", id))
-		} else {
-			ctx.ViewData("Tags", tags)
-		}
-		if units, err := models.Units(db, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err != nil {
-			error500(ctx, err.Error(), f("Error editing transaction %s", id))
-		} else {
-			ctx.ViewData("Units", units)
-		}
-
-		ctx.View("transaction-form.gohtml")
-	}).Name = "EditTransaction" // Also New
+	app.Get("/transaction/edit/{id:string}", controllers.Transactions.Read).Name = "EditTransaction" // Also New
 
 	// Clone transaction
-	app.Get("/transaction/clone/{id:string}", func(ctx context.Context) {
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
-			error500(ctx, err.Error(), "Error Loading Transactions")
-		} else if id := uint(ID); id > 0 {
-			if tx, err := models.FindTransaction(db, id); err != nil {
-				error500(ctx, err.Error(), "Error Loading Transactions")
-			} else if txTags, err := tx.Tags(db, q.Select("ID")).All(); err != nil {
-				error500(ctx, err.Error(), "Error Loading Transactions")
-			} else {
-				now := time.Now().Local()
-				tx.ID = 0
-				tx.Date = now
-				tx.CreatedAt = now
-				tx.UpdatedAt = now
-				if err := tx.Insert(db); err != nil {
-					error500(ctx, err.Error(), "Error Loading Transactions")
-				}
-				if len(txTags) > 0 {
-					tx.SetTags(db, false, txTags...)
-				}
-			}
-		}
-		ctx.Redirect(rv.Path("ListTransactions"))
-	}).Name = "CloneTransaction" // Also New
+	app.Get("/transaction/clone/{id:string}", controllers.Transactions.Clone).Name = "CloneTransaction" // Also New
 
 	// Save a transaction
-	app.Post("/transaction/save/{id:string}", func(ctx context.Context) {
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		} else {
-			var tx models.Transaction
-			tx.ID = uint(ID)
-			tx.PersonID = 1
-			tx.Type = ctx.PostValue("Type")
-			tx.Description = ctx.PostValue("Description")
-			tx.Note = ctx.PostValue("Note")
-			tx.TotalPrice = ctx.PostValue("TotalPrice")
-			tx.Quantity = ctx.PostValue("Quantity")
-			tx.Price = ctx.PostValue("UnitPrice")
-			if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			} else {
-				tx.Date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
-			}
-
-			if invID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			} else if invID > 0 {
-				tx.InvoiceID.SetValid(uint(invID))
-			}
-
-			if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			} else if unitID > 0 {
-				tx.UnitID.SetValid(uint8(unitID))
-			}
-
-			if isExpensive, err := strconv.ParseUint(ctx.PostValue("IsExpensive"), 10, 8); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			} else {
-				tx.IsExpensive = int8(isExpensive)
-			}
-
-			updTags := true
-
-			if tx.ID > 0 {
-				if err := tx.Update(db); err != nil {
-					updTags = false
-					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-				}
-			} else if err := tx.Insert(db); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			}
-
-			if updTags {
-				var IDs []interface{}
-				if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); err != nil {
-					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-				}
-
-				if len(IDs) > 0 {
-					if tags, err := models.Tags(db, q.Select("id"), q.WhereIn("id IN ?", IDs...)).All(); err != nil {
-						error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-					} else if err := tx.SetTags(db, false, tags...); err != nil {
-						error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-					}
-				}
-			}
-		}
-		ctx.Redirect(rv.Path("ListTransactions"))
-	}).Name = "SaveTransaction"
+	app.Post("/transaction/save/{id:string}", controllers.Transactions.Save).Name = "SaveTransaction"
 
 	// Delete one transaction
-	app.Get("/transaction/delete/{id:string}", func(ctx context.Context) {
-		if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
-			error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
-		} else if ID > 0 {
-			if tx, err := models.FindTransaction(db, uint(ID)); err != nil {
-				error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
-			} else {
-				tx.Deleted = 1
-				if err := tx.Update(db); err != nil {
-					error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
-				}
-			}
-		}
-
-		ctx.Redirect(rv.Path("ListTransactions"))
-	}).Name = "DeleteTransaction"
-	//
-	// =================== End of Transactions ======================
-	//
+	app.Get("/transaction/delete/{id:string}", controllers.Transactions.SofDelete).Name = "DeleteTransaction"
 
 	//
 	// =================== Tags ======================
