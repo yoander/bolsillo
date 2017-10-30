@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -9,10 +10,17 @@ import (
 	"github.com/kataras/iris/context"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/yoander/bolsillo/models"
+	"gopkg.in/volatiletech/null.v6"
 )
 
 // Invoice unexported
 type invoice struct{}
+
+// InvoicePrice unexported
+type InvoicePrice struct {
+	models.Invoice `boil:",bind"`
+	Price          null.Float64 `boil:"price"`
+}
 
 // Read one invoice
 func (*invoice) Read(ctx context.Context) {
@@ -37,13 +45,27 @@ func (*invoice) Read(ctx context.Context) {
 
 // List invoices
 func (*invoice) List(ctx context.Context) {
+	var invo []InvoicePrice
+	// Use query building
+	err := models.NewQuery(DB,
+		q.SQL("SELECT invoices.*, SUM(transactions.total_price) AS price"+
+			" FROM invoices LEFT JOIN transactions"+
+			" ON transactions.invoice_id = invoices.id AND transactions.deleted = 0"+
+			" WHERE invoices.deleted = 0"+
+			" GROUP BY invoices.id"+
+			" ORDER BY invoices.date DESC, invoices.id",
+		),
+	).Bind(&invo)
+
+	fmt.Printf("%v", invo)
+
 	// Eager loading
-	inv, err := models.Invoices(DB, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
+	//inv, err := models.Invoices(DB, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
 	if err != nil {
 		error500(ctx, err.Error(), "Loading invoices")
 	}
 	ctx.ViewData("Title", "Invoices")
-	ctx.ViewData("Invoices", inv)
+	ctx.ViewData("Invoices", invo)
 	ctx.View("invoices.gohtml")
 }
 

@@ -7,6 +7,7 @@
       <th>Date</th>
       <th>Status</th>
       <th>Note</th>
+      <th>Price</th>
       <th></th>
     </tr>
   </thead>
@@ -22,6 +23,7 @@
           {{ else if eq .Status "CANC" }}<a class="tag badge badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
           {{ end }}
         <td>{{ .Note }}</td>
+        <td>{{ .Price.Value }}</td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
             <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditInvoice" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>

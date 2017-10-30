@@ -47,7 +47,7 @@ func main() {
 		return s
 	}*/
 
-	boil.DebugMode = false
+	boil.DebugMode = true
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
