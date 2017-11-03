@@ -1,0 +1,16 @@
+<h2>{{ .action }} Tag</h2>
+<form method="post" action="{{ if .tag }}{{ urlpath "SaveTag" (.tag.ID|printf "%d") }}{{ else }}{{ urlpath "SaveTag" "0" }}{{end}}">
+    <!--<input id="id" type="hidden" name="ID" value="0">-->
+    <div class="form-row">
+        <div class="col-5">
+            <div class="form-group">
+                <label class="form-control-label" for="description">Tag</label>
+                <input type="text" class="form-control form-control" id="tag" name="Tag" placeholder="Tag" value="{{ if .tag }}{{ .tag.Tag }}{{ end }}">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-info btn-sm"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
+            </div>
+        </div>
+    </div>
+</form>
