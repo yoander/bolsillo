@@ -100,14 +100,15 @@ table#invoices tbody td:nth-child(4) {
   cursor: pointer;
   _cursor: hand;
 }
-
+/*
 .btn-group .active::after  {
-  content: "✔"
+
+  border-style: groove;
 }
 
 .btn-group .focus {
   box-shadow: none;
-}
+}*/
 
 ul.focus {
   border-color: #80bdff !important;
