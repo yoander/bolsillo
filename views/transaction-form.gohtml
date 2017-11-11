@@ -16,8 +16,8 @@
                 <label class="form-control-label" for="invoice">Invoice</label>
                 <select class="custom-select form-control" id="invoice" name="Invoice">
                     <option value="0">Select one item</option>
-                    {{ range .invoices }}
-                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
+                    {{ range .txoices }}
+                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.txoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
                     {{ end }}
                 </select>
             </div>
@@ -32,6 +32,20 @@
                 <span class="custom-control-indicator"></span>
                 <span class="custom-control-description text-success">Income</span>
               </label>
+            </div>
+            <div class="form-group">
+                <!--<div><label class="form-control-label" for="type">Status</label></div>-->
+                <div class="btn-group" data-toggle="buttons" id="type">
+                  <label class="btn btn-sm btn-success{{with .tx -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
+                      <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID"{{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid
+                  </label>
+                  <label class="btn btn-sm btn-warning{{with .tx -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
+                      <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG"{{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending
+                  </label>
+                  <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
+                      <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC"{{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}><i class="fa fa-ban" aria-hidden="true"></i> Canceled
+                  </label>
+                </div>
             </div>
             <div class="form-group">
                 <div class="col-3 pl-0">

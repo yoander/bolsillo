@@ -108,6 +108,7 @@ func (*transaction) Save(ctx context.Context) {
 		tx.TotalPrice = ctx.PostValue("TotalPrice")
 		tx.Quantity = ctx.PostValue("Quantity")
 		tx.Price = ctx.PostValue("UnitPrice")
+		tx.Status = ctx.PostValue("Status")
 		if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
 			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
 		} else {

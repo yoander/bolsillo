@@ -22,6 +22,7 @@
           {{ else if eq .Status "PNDG" }}<a class="tag badge badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
           {{ else if eq .Status "CANC" }}<a class="tag badge badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
           {{ end }}
+        </td>
         <td>{{ .Note }}</td>
         <td>{{ .Price.Value }}</td>
         <td>

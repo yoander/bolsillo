@@ -4,14 +4,15 @@
   <thead>
     <tr>
       <th style="width:5%">#</th>
-      <th style="width:30%">Description</th>
-      <th style="width:10%">Type</th>
-      <th style="width:10%">Unit Price </th>
-      <th style="width:10%">
+      <th style="width:34%">Description</th>
+      <th style="width:6%">Type</th>
+      <th style="width:6%">Status</th>
+      <th style="width:8%">Unit Price </th>
+      <th style="width:8%">
         <div>Total Price</div>
         <div class="info text-secondary">{{ $total_price }}</div>
       </th>
-      <th style="width:10%">Date</th>
+      <th style="width:8%">Date</th>
       <!--<th>Note</th>-->
       <th style="width:25%">Tags</th>
       <th style="width:10%"></th>
@@ -21,22 +22,28 @@
       {{ range $i, $_ := .Transactions }}
       <tr>
         <td style="width:5%">{{ inc $i 1 }}</td>
-        <td style="width:30%">
+        <td style="width:34%">
           <div>{{ .Description }}</div>
           {{ with .Note }}
           <div class="info text-secondary">{{ . }}</div>
           {{ end }}
         </td>
-        <td style="width:10%">
+        <td style="width:6%">
           {{ if eq .Type "EXP" }}
-            <a class="badge badge-pill badge-danger" href="#">Expenses</a>
+            <a class="badge badge-pill badge-danger" href="#"><i class="fa fa-hand-o-down" aria-hidden="true"></i></a>
           {{ else }}
-            <a class="badge badge-pill badge-success" href="#">Income</a>
+            <a class="badge badge-pill badge-success" href="#"><i class="fa fa-hand-o-up" aria-hidden="true"></i></a>
           {{ end }}
         </td>
-        <td style="width:10%">{{ .Price }}</td>
-        <td style="width:10%">{{ .TotalPrice }}</td>
-        <td style="width:10%">{{ date .Date "02.01.2006" }}</td>
+        <td style="width:6%">
+          {{ if eq .Status "PAID" }}<a class="tag badge badge-pill badge-success" href="#" data-toggle="tooltip" data-placement="bottom" title="Paid"><i class="fa fa-check-circle-o" aria-hidden="true"></i></a>
+          {{ else if eq .Status "PNDG" }}<a class="tag badge badge-pill badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
+          {{ else if eq .Status "CANC" }}<a class="tag badge badge-pill badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
+          {{ end }}
+        </td>
+        <td style="width:8%">{{ .Price }}</td>
+        <td style="width:8%">{{ .TotalPrice }}</td>
+        <td style="width:8%">{{ date .Date "02.01.2006" }}</td>
         <td style="width:25%">
           {{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}{{ if eq .IsExpensive 1 }}<a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>{{ end }}
         </td>

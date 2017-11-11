@@ -2,6 +2,12 @@
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
+SET foreign_key_checks = 0;
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+
+DROP DATABASE IF EXISTS `bolsillo`;
+CREATE DATABASE `bolsillo` /*!40100 DEFAULT CHARACTER SET utf8 */;
+USE `bolsillo`;
 
 DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE `invoices` (
@@ -40,10 +46,12 @@ CREATE TABLE `tags` (
 DROP TABLE IF EXISTS `transactions`;
 CREATE TABLE `transactions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `description` varchar(50) NOT NULL,
+  `description` varchar(100) NOT NULL,
   `type` enum('EXP','INC') NOT NULL DEFAULT 'EXP' COMMENT 'EXP = Expense, INC = Income',
+  `status` enum('PAID','PNDG','CANC') NOT NULL DEFAULT 'PAID',
   `price` decimal(10,5) NOT NULL DEFAULT '0.00000',
   `total_price` decimal(7,2) NOT NULL DEFAULT '0.00',
+  `is_expensive` tinyint(4) NOT NULL DEFAULT '0',
   `invoice_id` int(10) unsigned DEFAULT NULL,
   `date` date NOT NULL,
   `note` varchar(150) NOT NULL DEFAULT '',
@@ -67,41 +75,41 @@ DELIMITER ;;
 
 CREATE TRIGGER `transaction_BEFORE_INSERT` BEFORE INSERT ON `transactions` FOR EACH ROW
 BEGIN
+	SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
 	/* Total price has priority over unit price */
     IF NEW.total_price > 0 THEN
         /* Calculate unit price */
         SET @total_price = IF(NEW.total_price > 1, NEW.total_price * 100, NEW.total_price);
-		SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
-        
-        IF NEW.unit_id > 0 THEN
+        SET @unit_price = @total_price / @quantity;
+        /*IF NEW.unit_id > 0 THEN
 			SET @unit_price = (SELECT @total_price / (IFNULL(base_relation, 1) * @quantity) FROM units WHERE id = NEW.unit_id);
         ELSE
 			SET @unit_price = @total_price / @quantity;
-        END IF;
+        END IF;*/
         SET NEW.price = IF(@unit_price > 1, @unit_price / 100, @unit_price);
-	/* Total price == unit price */
+	/* Total price == unit price * quantity */
     ELSE
-		SET NEW.total_price = NEW.price;
+		SET NEW.total_price = NEW.price * @quantity;
     END IF;
 END;;
 
 CREATE TRIGGER `transaction_BEFORE_UPDATE` BEFORE UPDATE ON `transactions` FOR EACH ROW
 BEGIN
+	SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
 	/* Total price has priority over unit price */
     IF NEW.total_price > 0 THEN
         /* Calculate unit price */
         SET @total_price = IF(NEW.total_price > 1, NEW.total_price * 100, NEW.total_price);
-		SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
-        
-        IF NEW.unit_id > 0 THEN
+        SET @unit_price = @total_price / @quantity;
+        /*IF NEW.unit_id > 0 THEN
 			SET @unit_price = (SELECT @total_price / (IFNULL(base_relation, 1) * @quantity) FROM units WHERE id = NEW.unit_id);
         ELSE
 			SET @unit_price = @total_price / @quantity;
-        END IF;
+        END IF;*/
         SET NEW.price = IF(@unit_price > 1, @unit_price / 100, @unit_price);
-	/* Total price == unit price */
+	/* Total price == unit price * quantity */
     ELSE
-		SET NEW.total_price = NEW.price;
+		SET NEW.total_price = NEW.price * @quantity;
     END IF;
 END;;
 
@@ -134,4 +142,4 @@ CREATE TABLE `units` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=' International System of Units ';
 
 
--- 2017-09-24 03:17:30
+-- 2017-11-11 00:33:48
