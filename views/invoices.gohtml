@@ -18,9 +18,9 @@
         <td>{{ .Code }}</td>
         <td>{{ date .Date "02.01.2006" }}
         <td>
-          {{ if eq .Status "PAID" }}<a class="tag badge badge-success" href="#" data-toggle="tooltip" data-placement="bottom" title="Paid"><i class="fa fa-check-circle-o" aria-hidden="true"></i></a>
-          {{ else if eq .Status "PNDG" }}<a class="tag badge badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
-          {{ else if eq .Status "CANC" }}<a class="tag badge badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
+          {{ if eq .Status "PAID" }}<a class="tag badge badge-pill badge-success" href="#" data-toggle="tooltip" data-placement="bottom" title="Paid"><i class="fa fa-check-circle-o" aria-hidden="true"></i></a>
+          {{ else if eq .Status "PNDG" }}<a class="tag badge badge-pill badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
+          {{ else if eq .Status "CANC" }}<a class="tag badge badge-pill badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
           {{ end }}
         </td>
         <td>{{ .Note }}</td>
