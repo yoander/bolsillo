@@ -197,7 +197,7 @@ func main() {
 	app.Post("/invoice/save/{id:string}", controllers.Invoices.Save).Name = "SaveInvoice"
 
 	// Save
-	app.Get("/invoice/delete/{id:string}", controllers.Invoices.SofDelete).Name = "DeleteInvoice"
+	app.Get("/invoice/delete/{id:string}", controllers.Invoices.SoftDelete).Name = "DeleteInvoice"
 
 	//
 	// =================== Transactions ======================
@@ -215,7 +215,7 @@ func main() {
 	app.Post("/transaction/save/{id:string}", controllers.Transactions.Save).Name = "SaveTransaction"
 
 	// Delete one transaction
-	app.Get("/transaction/delete/{id:string}", controllers.Transactions.SofDelete).Name = "DeleteTransaction"
+	app.Get("/transaction/delete/{id:string}", controllers.Transactions.SoftDelete).Name = "DeleteTransaction"
 
 	//
 	// =================== Tags ======================

@@ -162,8 +162,8 @@ func (*transaction) Save(ctx context.Context) {
 	ctx.Redirect(ReverseRouter.Path("ListTransactions"))
 }
 
-// SofDelete mark an transaction as deleted
-func (*transaction) SofDelete(ctx context.Context) {
+// SoftDelete mark an transaction as deleted
+func (*transaction) SoftDelete(ctx context.Context) {
 	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
 		error500(ctx, err.Error(), f("Error deleting transactions %d", ID))
 	} else if ID > 0 {
