@@ -16,8 +16,8 @@
                 <label class="form-control-label" for="invoice">Invoice</label>
                 <select class="custom-select form-control" id="invoice" name="Invoice">
                     <option value="0">Select one item</option>
-                    {{ range .txoices }}
-                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.txoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
+                    {{ range .invoices }}
+                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
                     {{ end }}
                 </select>
             </div>
