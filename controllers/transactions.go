@@ -35,7 +35,7 @@ func (*transaction) Read(ctx context.Context) {
 		ctx.ViewData("action", "New")
 	}
 
-	if invoices, err := models.Invoices(DB, q.Select("id", "code", "date", "note"), q.OrderBy("date DESC")).All(); err != nil {
+	if invoices, err := models.Invoices(DB, q.Select("id", "code", "date", "note"), q.Where("deleted = 0"), q.OrderBy("date DESC")).All(); err != nil {
 		error500(ctx, err.Error(), f("Error editing transaction %s", id))
 	} else {
 		ctx.ViewData("invoices", invoices)
@@ -46,6 +46,7 @@ func (*transaction) Read(ctx context.Context) {
 	} else {
 		ctx.ViewData("Tags", tags)
 	}
+
 	if units, err := models.Units(DB, q.Select("id", "name", "symbol"), q.OrderBy("name ASC")).All(); err != nil {
 		error500(ctx, err.Error(), f("Error editing transaction %s", id))
 	} else {
