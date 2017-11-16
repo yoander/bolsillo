@@ -12,16 +12,15 @@
                 <input type="text" class="form-control datepicker-here" data-language="en" data-auto-close="true" data-date-format="dd.mm.yyyy" id="date" name="Date" placeholder="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" value="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" readonly>
             </div>
             <div class="form-group">
-                <div><label class="form-control-label" for="type">Status</label></div>
                 <div class="btn-group" data-toggle="buttons" id="type">
                   <label class="btn btn-sm btn-success{{with .inv -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID"{{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid
+                      <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID" {{with .inv -}}{{ if eq .Status "PAID" }}checked="checked"{{ end }}{{- end}}><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid
                   </label>
                   <label class="btn btn-sm btn-warning{{with .inv -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG"{{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending
+                      <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG" {{with .inv -}}{{ if eq .Status "PNDG" }}checked="checked"{{ end }}{{- end}}><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending
                   </label>
                   <label class="btn btn-sm btn-danger{{with .inv -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC"{{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}><i class="fa fa-ban" aria-hidden="true"></i> Canceled
+                      <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC" {{with .inv -}}{{ if eq .Status "CANC" }}checked="checked"{{ end }}{{- end}}><i class="fa fa-ban" aria-hidden="true"></i> Canceled
                   </label>
                 </div>
             </div>
