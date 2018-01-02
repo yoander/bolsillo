@@ -1,0 +1,70 @@
+{{ $total_price := printf "%.2f" (sum_prices .Transactions) }}
+<table id="transactions" class="table table-responsive table-striped table-sm">
+  <thead>
+    <tr>
+      <th style="width:5%">#</th>
+      <th style="width:34%">Description</th>
+      <th style="width:6%">Type</th>
+      <th style="width:6%">Status</th>
+      <th style="width:8%">Unit Price </th>
+      <th style="width:8%">
+        <div>Total Price</div>
+        <div class="info text-secondary">{{ $total_price }}</div>
+      </th>
+      <th style="width:8%">Date</th>
+      <!--<th>Note</th>-->
+      <th style="width:25%">Tags</th>
+      <th style="width:10%"></th>
+    </tr>
+  </thead>
+  <tbody>
+      {{ range $i, $_ := .Transactions }}
+      <tr>
+        <td style="width:5%">{{ inc $i 1 }}</td>
+        <td style="width:34%">
+          <div>{{ .Description }}</div>
+          {{ with .Note }}
+          <div class="info text-secondary">{{ . }}</div>
+          {{ end }}
+        </td>
+        <td style="width:6%">
+          {{ if eq .Type "EXP" }}
+            <a class="badge badge-pill badge-danger" href="#"><i class="fa fa-hand-o-down" aria-hidden="true"></i></a>
+          {{ else }}
+            <a class="badge badge-pill badge-success" href="#"><i class="fa fa-hand-o-up" aria-hidden="true"></i></a>
+          {{ end }}
+        </td>
+        <td style="width:6%">
+          {{ if eq .Status "PAID" }}<a class="tag badge badge-pill badge-success" href="#" data-toggle="tooltip" data-placement="bottom" title="Paid"><i class="fa fa-check-circle-o" aria-hidden="true"></i></a>
+          {{ else if eq .Status "PNDG" }}<a class="tag badge badge-pill badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
+          {{ else if eq .Status "CANC" }}<a class="tag badge badge-pill badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
+          {{ end }}
+        </td>
+        <td style="width:8%">{{ .Price }}</td>
+        <td style="width:8%">{{ .TotalPrice }}</td>
+        <td style="width:8%">{{ date .Date "02.01.2006" }}</td>
+        <td style="width:25%">
+          {{ range .R.Tags }}<a class="tag badge badge-info" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}{{ if eq .IsExpensive 1 }}<a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>{{ end }}
+        </td>
+        <td style="width:10%">
+          <div class="btn-group" role="group" aria-label="Basic example">
+          <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+          <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
+          <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+        </div>
+      </td>
+      </tr>
+    {{ end }}
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>{{ $total_price }}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>

@@ -10,7 +10,17 @@
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="date">Date</label>
-                <input type="text" class="form-control datepicker-here" data-language="en" data-auto-close="true" data-date-format="dd.mm.yyyy" id="date" name="Date" placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" value="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" readonly>
+                <input 
+                    type="text" 
+                    class="form-control datepicker-here" 
+                    data-language="en" 
+                    data-auto-close="true" 
+                    data-date-format="dd.mm.yyyy" 
+                    id="date" 
+                    name="Date" 
+                    placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+                    value="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+                    readonly>
             </div>
             <div class="form-group">
                 <label class="form-control-label" for="invoice">Invoice</label>
@@ -106,5 +116,6 @@
     </div>
 </form>
 {{ define "js" }}
-  <script src="{{ asset "js/tags.js" }}"></script>
+    <script src="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.js" }}"></script>
+    <script src="{{ asset "js/tags.js" }}"></script>
 {{ end }}

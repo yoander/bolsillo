@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/kataras/iris/view"
+
 	"github.com/kataras/iris/context"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/yoander/bolsillo/models"
@@ -58,15 +60,34 @@ func (*transaction) Read(ctx context.Context) {
 
 // List transactions
 func (*transaction) List(ctx context.Context) {
+	startDate, err := time.Parse("02.01.2006", ctx.FormValue("startDate"))
+	endDate, err := time.Parse("02.01.2006", ctx.FormValue("endDate"))
+
+	if err != nil {
+		now := time.Now().Local()
+		startDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+		endDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+	}
+
 	// Eager loading
-	tran, err := models.Transactions(DB, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC"), q.Load("Tags")).All()
+	tran, err := models.Transactions(DB,
+		q.Where("deleted = ?", 0),
+		q.And("date BETWEEN ? AND ?", startDate, endDate),
+		q.OrderBy("date DESC, id DESC"),
+		q.Load("Tags")).All()
+
 	if err != nil {
 		error500(ctx, err.Error(), "Error Loading Transactions")
 	}
 
 	ctx.ViewData("Title", "Transactions")
 	ctx.ViewData("Transactions", tran)
-	ctx.View("transactions.gohtml")
+	if ctx.IsAjax() {
+		ctx.ViewLayout(view.NoLayout)
+		ctx.View("transactions-table.gohtml")
+	} else {
+		ctx.View("transactions.gohtml")
+	}
 }
 
 // Clone transactions

@@ -3,8 +3,6 @@ package main
 import (
 	"database/sql"
 	"log"
-	"reflect"
-	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -16,7 +14,7 @@ import (
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/yoander/bolsillo/controllers"
-	"github.com/yoander/bolsillo/models"
+	"github.com/yoander/bolsillo/tpl"
 )
 
 func main() {
@@ -47,7 +45,7 @@ func main() {
 		return s
 	}*/
 
-	boil.DebugMode = true
+	boil.DebugMode = false
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
@@ -66,104 +64,11 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	tmpl := iris.HTML("./views", ".gohtml").Layout("layout.gohtml")
-	tmpl.Reload(true) // reload templates on each request (development mode)
-	// default template funcs are:
-	//
-	// - {{ urlpath "mynamedroute" "pathParameter_ifneeded" }}
-	// - {{ render "header.html" }}
-	// - {{ render_r "header.html" }} // partial relative path to current page
-	// - {{ yield }}
-	// - {{ current }}
+	tpl.ReverseRouter = rv
+	tpl.Ngx = iris.HTML("./views", ".gohtml").Layout("layout.gohtml").Reload(true) // reload templates on each request (development mode)
+	tpl.AddFuncs()
 
-	tmpl.AddFunc("dec", func(num int, step int) int {
-		return num - step
-	})
-
-	tmpl.AddFunc("inc", func(num int, step int) int {
-		return num + step
-	})
-
-	tmpl.AddFunc("fdec", func(num float64, step float64) float64 {
-		return num - step
-	})
-
-	tmpl.AddFunc("finc", func(num float64, step float64) float64 {
-		return num + step
-	})
-
-	tmpl.AddFunc("strtofloat", func(s string) (float64, error) {
-		return strconv.ParseFloat(s, 64)
-	})
-
-	tmpl.AddFunc("sum_prices", func(transactions models.TransactionSlice) float64 {
-		sum := 0.0
-		for _, t := range transactions {
-			if v, err := strconv.ParseFloat(t.TotalPrice, 64); err == nil {
-				sum += v
-			}
-		}
-		return sum
-	})
-
-	tmpl.AddFunc("date", func(date time.Time, DateFormat string) string {
-		return date.Format(DateFormat)
-	})
-
-	tmpl.AddFunc("now", func() time.Time {
-		return time.Now()
-	})
-
-	tmpl.AddFunc("asset", func(filename string) string {
-		return rv.Path("Home") + "assets/" + filename
-	})
-
-	tmpl.AddFunc("active", func(URI string, CurrentURI string) string {
-		if URI == CurrentURI {
-			return " active"
-		}
-		return ""
-	})
-
-	tmpl.AddFunc("in", func(v interface{}, in interface{}) bool {
-		val := reflect.Indirect(reflect.ValueOf(in))
-		switch val.Kind() {
-		case reflect.Slice, reflect.Array:
-			for i := 0; i < val.Len(); i++ {
-				if v == val.Index(i).Interface() {
-					return true
-				}
-			}
-		}
-		return false
-	})
-
-	tmpl.AddFunc("tag_exists", func(tag uint16, tags models.TagSlice) bool {
-		for _, t := range tags {
-			if t.ID == tag {
-				return true
-			}
-		}
-		return false
-	})
-
-	tmpl.AddFunc("join_tags", func(tags models.TagSlice, joinField string) string {
-		len := len(tags) - 1
-		s := ""
-		for i, t := range tags {
-			if joinField == "id" {
-				s += strconv.Itoa(int(t.ID))
-			} else if joinField == "tag" {
-				s += t.Tag
-			}
-			if i < len {
-				s += ","
-			}
-		}
-		return s
-	})
-
-	app.RegisterView(tmpl)
+	app.RegisterView(tpl.Ngx)
 
 	// Register static content
 	app.StaticWeb("/assets", "./assets")

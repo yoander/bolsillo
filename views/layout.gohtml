@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
     <link rel="stylesheet" href="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.css" }}">
     <link rel="stylesheet" href="{{ asset "css/main.css" }}">
+    {{ template "css" . }}
   </head>
   <body>
       <nav id="topbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
@@ -129,9 +130,7 @@
         <script src="{{ asset "vendor/bootstrap/dist/js/bootstrap.min.js" }}"></script>
         <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
         <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-        <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-        <script src="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.js" }}"></script>
-        {{ template "js" .}}
+        {{ template "js" . }}
   </body>
   </body>
 </html>

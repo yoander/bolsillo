@@ -1,15 +1,26 @@
-/*@import url('https://fonts.googleapis.com/css?family=Yantramanav');*/
-@import url('https://fonts.googleapis.com/css?family=Cuprum');
-/*
+@import url('https://fonts.googleapis.com/css?family=Coda');
+/*https://fontlibrary.org/face/aleo*/
+
+/*@font-face {
+  font-family: 'MyWebFont';
+  src: url('myfont.woff2') format('woff2'),
+       url('myfont.woff') format('woff'),
+       url('myfont.ttf') format('truetype');
+}*/
+/*  
  * Base structure
  */
 
 /* Move down content because we have a fixed navbar that is 3.5rem tall */
 body {
   padding-top: 3.5rem;
-  font-size: 1.05rem;
-  font-family: 'Cuprum', sans-serif;
-  color: #666666
+  font-family: 'Coda', serif;
+  font-weight: 400;
+  font-size: 1rem;
+  color: #666666;
+  /*font-family: 'AleoRegular'; 
+   font-weight: normal; 
+   font-style: normal; */
 }
 
 /*
@@ -150,4 +161,8 @@ ul.focus {
 
 .info {
   font-size: 0.8rem;
+}
+
+.datepicker {
+  font-family: inherit;
 }

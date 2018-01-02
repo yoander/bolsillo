@@ -14,6 +14,7 @@ var DB *sql.DB
 // ReverseRouter iris
 var ReverseRouter *router.RoutePathReverser
 
+var p = fmt.Print
 var f = fmt.Sprintf
 
 // Error500 print error message

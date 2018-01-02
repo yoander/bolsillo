@@ -5,9 +5,10 @@
   },
   "dependencies": {
     "air-datepicker": "^2.2.3",
-    "bootstrap": "4.0.0-beta.2",
+    "bootstrap": "4.0.0-beta.3",
     "font-awesome": "^4.7.0",
     "jQuery.Flexdatalist": "https://github.com/sergiodlopes/jquery-flexdatalist/archive/2.2.2.tar.gz",
+    "noty": "^3.1.4",
     "popper.js": "1.11.0"
   }
 }
