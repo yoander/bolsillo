@@ -18,8 +18,6 @@ $(document).ready(function () {
                endDate: $('#endDate').val(),
             },
             success: function(data) {
-                console.log('OK')
-                console.log(data);
                 $('#transTable').html(data);
                 n.setType('success'); // Notification type updater
                 n.setText('<strong><i class="fa fa-check" aria-hidden="true"></i> Transactions loaded</strong>');
