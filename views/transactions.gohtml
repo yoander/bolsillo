@@ -15,8 +15,8 @@
         data-date-format="dd.mm.yyyy" 
         id="startDate" 
         name="startDate" 
-        placeholder="01.{{ date now "01.2006" }}" 
-        value="01.{{ date now "01.2006" }}" 
+        placeholder="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+        value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
         readonly>
       <label class="sr-only" for="endDate">End Date</label>
       <input 

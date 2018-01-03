@@ -5,6 +5,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/kataras/iris/view"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/volatiletech/sqlboiler/boil"
 
@@ -13,9 +15,16 @@ import (
 	"github.com/kataras/iris/core/router"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
+	"github.com/kataras/iris/sessions"
 	"github.com/yoander/bolsillo/controllers"
 	"github.com/yoander/bolsillo/tpl"
 )
+
+func error500(ctx context.Context, msg string, header string) {
+	ctx.StatusCode(500)
+	ctx.Values().Set("header", header)
+	ctx.Values().Set("message", msg)
+}
 
 func main() {
 	//p := fmt.Println
@@ -33,6 +42,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	sess := sessions.New(sessions.Config{Cookie: "TransactionFilter"})
 
 	/*simpleDebug := func() string {
 		_, fileName, fileLine, ok := runtime.Caller(1)
@@ -108,7 +119,40 @@ func main() {
 	// =================== Transactions ======================
 	//
 	// List of transactions
-	app.Get("/transactions", controllers.Transactions.List).Name = "ListTransactions"
+	app.Get("/transactions", func(ctx context.Context) {
+		s := sess.Start(ctx)
+
+		startDate := ctx.FormValue("startDate")
+		if startDate != "" {
+			s.Set("startDate", startDate)
+		} else {
+			startDate = s.GetString("startDate")
+		}
+
+		endDate := ctx.FormValue("endDate")
+		if endDate != "" {
+			s.Set("endDate", endDate)
+		} else {
+			endDate = s.GetString("endDate")
+		}
+
+		ctx.ViewData("startDate", startDate)
+		ctx.ViewData("endDate", endDate)
+		ctx.ViewData("Title", "Transactions")
+		if transactions, err := controllers.Transactions.GetFilteredTransactions(startDate, endDate); err == nil {
+			ctx.ViewData("transactions", transactions)
+		} else {
+			error500(ctx, err.Error(), "Error listing transactions!!!")
+		}
+
+		if ctx.IsAjax() {
+			ctx.ViewLayout(view.NoLayout)
+			ctx.View("transactions-table.gohtml")
+		} else {
+			ctx.View("transactions.gohtml")
+		}
+
+	}).Name = "ListTransactions"
 
 	// Edit one transaction
 	app.Get("/transaction/edit/{id:string}", controllers.Transactions.Read).Name = "EditTransaction" // Also New

@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/kataras/iris/view"
-
 	"github.com/kataras/iris/context"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/yoander/bolsillo/models"
@@ -59,35 +57,24 @@ func (*transaction) Read(ctx context.Context) {
 }
 
 // List transactions
-func (*transaction) List(ctx context.Context) {
-	startDate, err := time.Parse("02.01.2006", ctx.FormValue("startDate"))
-	endDate, err := time.Parse("02.01.2006", ctx.FormValue("endDate"))
+func (*transaction) GetFilteredTransactions(startDate string, endDate string) (models.TransactionSlice, error) {
+	sDate, err := time.Parse("02.01.2006", startDate)
+	eDate, err := time.Parse("02.01.2006", endDate)
 
 	if err != nil {
 		now := time.Now().Local()
-		startDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
-		endDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+		sDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+		eDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
 	}
 
 	// Eager loading
-	tran, err := models.Transactions(DB,
+	transactions, err := models.Transactions(DB,
 		q.Where("deleted = ?", 0),
-		q.And("date BETWEEN ? AND ?", startDate, endDate),
+		q.And("date BETWEEN ? AND ?", sDate, eDate),
 		q.OrderBy("date DESC, id DESC"),
 		q.Load("Tags")).All()
 
-	if err != nil {
-		error500(ctx, err.Error(), "Error Loading Transactions")
-	}
-
-	ctx.ViewData("Title", "Transactions")
-	ctx.ViewData("Transactions", tran)
-	if ctx.IsAjax() {
-		ctx.ViewLayout(view.NoLayout)
-		ctx.View("transactions-table.gohtml")
-	} else {
-		ctx.View("transactions.gohtml")
-	}
+	return transactions, err
 }
 
 // Clone transactions
