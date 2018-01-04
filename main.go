@@ -76,7 +76,7 @@ func main() {
 	app.Use(logger.New())
 
 	tpl.ReverseRouter = rv
-	tpl.Ngx = iris.HTML("./views", ".gohtml").Layout("layout.gohtml").Reload(true) // reload templates on each request (development mode)
+	tpl.Ngx = iris.HTML("./views", ".gohtml"). /*.Layout("layout.gohtml")*/ Reload(true) // reload templates on each request (development mode)
 	tpl.AddFuncs()
 
 	app.RegisterView(tpl.Ngx)
@@ -84,7 +84,7 @@ func main() {
 	// Register static content
 	app.StaticWeb("/assets", "./assets")
 
-	app.Use(func(ctx context.Context) {
+	app.UseGlobal(func(ctx context.Context) {
 		ctx.Gzip(true)
 		ctx.ViewData("URI", ctx.Request().URL.RequestURI())
 		ctx.Next()

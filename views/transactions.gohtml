@@ -1,67 +1,74 @@
-{{ define "css" }}
-  <!--<link rel="stylesheet" href="{{ asset "vendor/izitoast/dist/css/iziToast.min.css" }}">-->
-  <link rel="stylesheet" href="{{ asset "vendor/noty/lib/noty.css" }}">
-{{ end }}
-<h2>Transactions  <a type="submit" class="btn btn-sm btn-success float-right" href="{{urlpath "EditTransaction" "0"}}"><i class="fa fa-file-text" aria-hidden="true"></i> New</a></h2>
-<div class="card">  
-  <div class="card-body">
-    <form class="form-inline">
-      <label class="sr-only" for="startDate">Start Date</label>
-      <input 
-        type="text" 
-        class="form-control mb-2 mr-sm-2 datepicker-here" 
-        data-language="en" 
-        data-auto-close="true" 
-        data-date-format="dd.mm.yyyy" 
-        id="startDate" 
-        name="startDate" 
-        placeholder="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
-        value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
-        readonly>
-      <label class="sr-only" for="endDate">End Date</label>
-      <input 
-        type="text" 
-        class="form-control mb-2 mr-sm-2 datepicker-here" 
-        data-language="en" 
-        data-auto-close="true" 
-        data-date-format="dd.mm.yyyy" 
-        id="endDate" 
-        name="endDate" 
-        placeholder="01.{{ date now "02.01.2006" }}" 
-        value="{{ date now "02.01.2006" }}" 
-        readonly>
-      <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
-      <div class="input-group mb-2 mr-sm-2">
-        <div class="input-group-prepend">
-          <div class="input-group-text">@</div>
+{{ template "html" }}
+  {{ template "head" }}
+    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/noty/lib/noty.css" }}">
+  {{ template "end_head" }}
+  {{ template "body" }}
+    {{ template "content" . }}
+      <div class="clearfix">
+        <h2 class="float-left">Transactions</h2>
+        <a class="btn btn-success my-2 my-sm-0 float-right" href="{{urlpath "EditTransaction" "0"}}" role="button"><i class="fa fa-file-text" aria-hidden="true"></i> New</a>
+      </div>
+      <div class="card mb-3">  
+        <div class="card-body">
+          <form class="form-inline">
+            <label class="sr-only" for="startDate">Start Date</label>
+            <input 
+              type="text" 
+              class="form-control mb-2 mr-sm-2 datepicker-here" 
+              data-language="en" 
+              data-auto-close="true" 
+              data-date-format="dd.mm.yyyy" 
+              id="startDate" 
+              name="startDate" 
+              placeholder="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+              value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+              readonly>
+            <label class="sr-only" for="endDate">End Date</label>
+            <input 
+              type="text" 
+              class="form-control mb-2 mr-sm-2 datepicker-here" 
+              data-language="en" 
+              data-auto-close="true" 
+              data-date-format="dd.mm.yyyy" 
+              id="endDate" 
+              name="endDate" 
+              placeholder="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+              value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+              readonly>
+            <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
+            <div class="input-group mb-2 mr-sm-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">@</div>
+              </div>
+              <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
+            </div>
+
+            <div class="form-check mb-2 mr-sm-2">
+              <input class="form-check-input" type="checkbox" id="inlineFormCheck">
+              <label class="form-check-label" for="inlineFormCheck">
+                Remember me
+              </label>
+            </div>
+
+            <button 
+              type="submit"
+              id="filter" 
+              data-url="{{ urlpath "ListTransactions" }}"
+              class="btn btn-primary mb-2 trigger"
+              onclick="javascript:return false;">
+                <i class="fa fa-filter" aria-hidden="true"></i> Filter
+            </button>
+          </form>
         </div>
-        <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
       </div>
-
-      <div class="form-check mb-2 mr-sm-2">
-        <input class="form-check-input" type="checkbox" id="inlineFormCheck">
-        <label class="form-check-label" for="inlineFormCheck">
-          Remember me
-        </label>
+      <div id="transTable">
+        {{ render "transactions-table.gohtml" }}
       </div>
-
-      <button 
-        type="submit"
-        id="filter" 
-        data-url="{{ urlpath "ListTransactions" }}"
-        class="btn btn-primary mb-2 trigger"
-        onclick="javascript:return false;">
-          <i class="fa fa-filter" aria-hidden="true"></i> Filter
-      </button>
-    </form>
-  </div>
-</div>
-<div id="transTable">
-  {{ render "transactions-table.gohtml" }}
-</div>
-{{ define "js" }}
-  <noscript>Your browser does not support JavaScript!</noscript>
-  <!--<script src="{{ asset "vendor/izitoast/dist/js/iziToast.min.js" }}"></script>-->
-  <script src="{{ asset "vendor/noty/lib/noty.min.js" }}"></script>
-  <script src="{{ asset "js/transactions.js" }}"></script>
-{{ end }}
+    {{ template "end_content" }}
+    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
+    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
+    <script src="{{ asset "vendor/noty/lib/noty.min.js" }}"></script>
+    <script src="{{ asset "js/transactions.js" }}"></script>
+  {{ template "end_body" }}
+{{ template "end_html" }}

@@ -12,16 +12,6 @@
  */
 
 /* Move down content because we have a fixed navbar that is 3.5rem tall */
-body {
-  padding-top: 3.5rem;
-  font-family: 'Coda', serif;
-  font-weight: 400;
-  font-size: 1rem;
-  color: #666666;
-  /*font-family: 'AleoRegular'; 
-   font-weight: normal; 
-   font-style: normal; */
-}
 
 /*
 * Typography
@@ -85,13 +75,6 @@ h1 {
     padding-bottom: 1.5rem;
 }
 
-/*.form-control,
-.btn,
-.badge,
-.card {
-  border-radius: 0;
-}*/
-
 .table td {
   vertical-align: middle;
 }
@@ -108,55 +91,6 @@ table#transactions tbody td:nth-child(4) {
 table#invoices thead th:nth-child(4),
 table#invoices tbody td:nth-child(4) {
   text-align: center;
-}
-
-.btn-group .btn {
-  cursor: pointer;
-  _cursor: hand;
-}
-/*
-.btn-group .active::after  {
-
-  border-style: groove;
-}
-
-.btn-group .focus {
-  box-shadow: none;
-}*/
-
-ul.focus {
-  border-color: #80bdff !important;
-}
-
-.flexdatalist-multiple {
-  width: 100%;
-  padding: .1rem .2rem;
-  font-size: .75rem;
-  color: #495057;
-  background-color: #fff;
-  background-image: none;
-  border: 1px solid rgba(0,0,0,.15);
-  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
-  outline: none;
-}
-
-.flexdatalist-multiple:focus {
-  color: #495057;
-  background-color: #fff;
-  border-color: #80bdff !important;
-  outline: none;
-}
-
-.flexdatalist-multiple li.value {
-    background: #17a2b8;
-    color: #fff;
-    display: inline-block;
-    font-size: 100%;
-    font-weight: 700;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: .25rem;
 }
 
 .info {

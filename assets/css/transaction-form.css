@@ -1,0 +1,41 @@
+/*
+ul.focus {
+  border-color: #80bdff !important;
+  border-width: 2px;
+}
+*/
+ul.flexdatalist-multiple {
+    font-size: .75rem;
+    border: 1px solid #ced4da !important;
+    border-radius: .25rem !important;
+}
+
+ul.flexdatalist-multiple:focus {
+    outline: none;
+}
+
+.flexdatalist-multiple li.input-container, .flexdatalist-multiple li.input-container input {
+    min-width: 50px;
+    font-size: .75rem;
+}
+/*
+ul.flexdatalist-multiple:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #80bdff !important;
+  outline: none;
+  border-width: 2px;
+}
+
+ul.flexdatalist-multiple li.value {
+    background-color: #17a2b8;
+    color: #fff;
+    display: inline-block;
+    font-size: 100%;
+    font-weight: 700;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+}
+*/

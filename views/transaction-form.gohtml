@@ -1,125 +1,144 @@
-<h2>{{ .action }} Transaction</h2>
-<form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
-    <input id="tags" type="hidden" name="Tags" value="[{{ with $.txTags }}{{ join_tags . "id" }}{{ end }}]">
-    <!--<input id="id" type="hidden" name="ID" value="0">-->
-    <div class="form-row">
-        <div class="col-5">
-            <div class="form-group">
-                <label class="form-control-label" for="description">Description</label>
-                <input type="text" class="form-control" id="description" name="Description" placeholder="Description" value="{{ if .tx }}{{ .tx.Description }}{{ end }}">
-            </div>
-            <div class="form-group">
-                <label class="form-control-label" for="date">Date</label>
-                <input 
-                    type="text" 
-                    class="form-control datepicker-here" 
-                    data-language="en" 
-                    data-auto-close="true" 
-                    data-date-format="dd.mm.yyyy" 
-                    id="date" 
-                    name="Date" 
-                    placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
-                    value="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
-                    readonly>
-            </div>
-            <div class="form-group">
-                <label class="form-control-label" for="invoice">Invoice</label>
-                <select class="custom-select form-control" id="invoice" name="Invoice">
-                    <option value="0">Select one item</option>
-                    {{ range .invoices }}
-                      <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
-                    {{ end }}
-                </select>
-            </div>
-            <div class="form-group">
-              <div class="custom-control custom-radio custom-control-inline">
-                <input id="radio1" name="Type" type="radio" class="custom-control-input" value="EXP" {{ with .tx }}{{ if eq .Type "EXP" }}checked{{ end }}{{ end }}>
-                <span class="custom-control-indicator"></span>
-                <label class="custom-control-label text-danger" for="radio1">Expense</label>
-              </div>
-              <div class="custom-control custom-radio custom-control-inline">
-                <input id="radio2" name="Type" type="radio" class="custom-control-input" value="INC" {{ with .tx }}{{ if eq .Type "INC" }}checked{{ end }}{{ end }}>
-                <span class="custom-control-indicator"></span>
-                <label class="custom-control-label text-success" for="radio2">Income</label>
-              </div>
-            </div>
-            <div class="form-group">
-                <div class="btn-group btn-group-toggle" data-toggle="buttons" id="type">
-                  <label class="btn btn-sm btn-success{{with .tx -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID"{{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid
-                  </label>
-                  <label class="btn btn-sm btn-warning{{with .tx -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG"{{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending
-                  </label>
-                  <label class="btn btn-sm btn-danger{{with .tx -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
-                      <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC"{{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}><i class="fa fa-ban" aria-hidden="true"></i> Canceled
-                  </label>
+{{ template "html" }}
+  {{ template "head" }}
+    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "css/transaction-form.css" }}">
+  {{ template "end_head" }}
+  {{ template "body" }}
+    {{ template "content" . }}
+        <h2>{{ .action }} Transaction</h2>
+        <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
+            <input id="tags" type="hidden" name="Tags" value="[{{ with $.txTags }}{{ join_tags . "id" }}{{ end }}]">
+            <!--<input id="id" type="hidden" name="ID" value="0">-->
+            <div class="form-row">
+                <div class="col-5">
+                    <div class="form-group">
+                        <label class="form-control-label" for="description">Description</label>
+                        <input type="text" class="form-control" id="description" name="Description" placeholder="Description" value="{{ if .tx }}{{ .tx.Description }}{{ end }}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="date">Date</label>
+                        <input 
+                            type="text" 
+                            class="form-control datepicker-here" 
+                            data-language="en" 
+                            data-auto-close="true" 
+                            data-date-format="dd.mm.yyyy" 
+                            id="date" 
+                            name="Date" 
+                            placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+                            value="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="invoice">Invoice</label>
+                        <select class="custom-select form-control" id="invoice" name="Invoice">
+                            <option value="0">Select one item</option>
+                            {{ range .invoices }}
+                            <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
+                            {{ end }}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="radio1" name="Type" type="radio" class="custom-control-input" value="EXP" {{ with .tx }}{{ if eq .Type "EXP" }}checked{{ end }}{{ end }}>
+                        <span class="custom-control-indicator"></span>
+                        <label class="custom-control-label text-danger" for="radio1">Expense</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="radio2" name="Type" type="radio" class="custom-control-input" value="INC" {{ with .tx }}{{ if eq .Type "INC" }}checked{{ end }}{{ end }}>
+                        <span class="custom-control-indicator"></span>
+                        <label class="custom-control-label text-success" for="radio2">Income</label>
+                    </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons" id="type">
+                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
+                            <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID"{{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}><span class="text-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid</span>
+                        </label>
+                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
+                            <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG"{{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}><span class="text-warning"><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending</span>
+                        </label>
+                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
+                            <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC"{{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}><span class="text-danger"><i class="fa fa-ban" aria-hidden="true"></i> Canceled</span>
+                        </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-3 pl-0">
+                            <label class="form-control-label" for="quantity">Quantity</label>
+                            <input type="text" class="form-control" id="quantity" name="Quantity" placeholder="1" value="{{ with .tx }}{{ .Quantity }}{{ end }}">
+                        </div>
+                    </div>
+                    <div class="form-group col-3 pl-0">
+                        <label class="form-control-label" for="unit">Unit</label>
+                        <select class="form-control" id="unit" name="Unit">
+                            <option value="0">Select one item</option>
+                            {{ range .Units }}
+                            <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.UnitID.Uint8 .ID }} selected="selected"{{ end }}{{ end }}>{{.Name}}</option>
+                            {{ end }}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-3 pl-0">
+                            <label class="form-control-label" for="UnitPrice">Unit Price</label>
+                            <input type="text" class="form-control" id="TotalPrice" name="UnitPrice" placeholder="0.00" value="{{ with .tx }}{{ .Price }}{{ end }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-3 pl-0">
+                            <label class="form-control-label" for="TotalPrice">Total Price</label>
+                            <input type="text" class="form-control" id="TotalPrice" name="TotalPrice" placeholder="0.00" value="{{ with .tx }}{{ .TotalPrice }}{{ end }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox">
+                            <input
+                                type="checkbox" 
+                                id="isExpensive"
+                                class="custom-control-input" 
+                                name="IsExpensive" 
+                                value="1" 
+                                {{ with .tx }}{{ if eq .IsExpensive 1 }}checked{{ end }}{{ end }}>
+                            <label class="custom-control-label" for="isExpensive">Is expensive?</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="unit">Tags</label>
+                        <div>
+                            <input 
+                                type="text" 
+                                class="form-control form-control-sm flexdatalist" 
+                                data-min-length="1" 
+                                multiple="multiple" 
+                                list="tag-list" 
+                                data-selection-required="true" 
+                                value="{{ join_tags $.txTags "tag" }}"
+                                placeholder="Add tag">
+                            {{ with .Tags }}
+                                <datalist id="tag-list">
+                                {{ range .}}
+                                    <option value="{{ .ID }}" data-tag="{{ .Tag }}">{{ .Tag }}</option>
+                                {{ end }}
+                                </datalist>
+                            {{ end }}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-control-label" for="note">Note</label>
+                        <textarea class="form-control" id="note" name="Note" rows="2">{{ with .tx }}{{ .Note }}{{ end }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                        <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
+                    </div>
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-3 pl-0">
-                    <label class="form-control-label" for="quantity">Quantity</label>
-                    <input type="text" class="form-control" id="quantity" name="Quantity" placeholder="1" value="{{ with .tx }}{{ .Quantity }}{{ end }}">
-                </div>
-            </div>
-            <div class="form-group col-3 pl-0">
-                <label class="form-control-label" for="unit">Unit</label>
-                <select class="form-control" id="unit" name="Unit">
-                    <option value="0">Select one item</option>
-                    {{ range .Units }}
-                    <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.UnitID.Uint8 .ID }} selected="selected"{{ end }}{{ end }}>{{.Name}}</option>
-                    {{ end }}
-                </select>
-            </div>
-            <div class="form-group">
-                <div class="col-3 pl-0">
-                    <label class="form-control-label" for="UnitPrice">Unit Price</label>
-                    <input type="text" class="form-control" id="TotalPrice" name="UnitPrice" placeholder="0.00" value="{{ with .tx }}{{ .Price }}{{ end }}">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-3 pl-0">
-                    <label class="form-control-label" for="TotalPrice">Total Price</label>
-                    <input type="text" class="form-control" id="TotalPrice" name="TotalPrice" placeholder="0.00" value="{{ with .tx }}{{ .TotalPrice }}{{ end }}">
-                </div>
-            </div>
-            <div class="form-group">
-              <div class="custom-control custom-checkbox">
-                <input
-                    type="checkbox" 
-                    id="isExpensive"
-                    class="custom-control-input" 
-                    name="IsExpensive" 
-                    value="1" 
-                    {{ with .tx }}{{ if eq .IsExpensive 1 }}checked{{ end }}{{ end }}>
-                <label class="custom-control-label" for="isExpensive">Is expensive?</label>
-              </div>
-            </div>
-            <div class="form-group">
-                <label class="form-control-label" for="unit">Tags</label>
-                <div>
-                  <input type="text" class="flexdatalist form-control" data-min-length="1" multiple="multiple" list="tag-list" data-selection-required="true" value="{{ join_tags $.txTags "tag" }}">
-                  {{ with .Tags }}
-                    <datalist id="tag-list">
-                    {{ range .}}
-                        <option value="{{ .ID }}" data-tag="{{ .Tag }}">{{ .Tag }}</option>
-                    {{ end }}
-                    </datalist>
-                  {{ end }}
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-control-label" for="note">Note</label>
-                <textarea class="form-control" id="note" name="Note" rows="2">{{ with .tx }}{{ .Note }}{{ end }}</textarea>
-            </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-sm btn-info"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                <button type="submit" class="btn btn-sm btn-success"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
-            </div>
-        </div>
-    </div>
-</form>
-{{ define "js" }}
+        </form>
+    {{ template "end_content" }}
+    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
+    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
     <script src="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.js" }}"></script>
     <script src="{{ asset "js/tags.js" }}"></script>
-{{ end }}
+  {{ template "end_body" }}
+{{ template "end_html" }}

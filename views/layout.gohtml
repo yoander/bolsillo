@@ -1,17 +1,33 @@
+{{ define "html" }}
 <!DOCTYPE html>
 <html lang="en">
+{{ end }}
+{{ define "head" }}
   <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Coda">
     <link rel="stylesheet" href="{{ asset "vendor/bootstrap/dist/css/bootstrap.min.css" }}">
     <link rel="stylesheet" href="{{ asset "vendor/font-awesome/css/font-awesome.min.css"}}">
-    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.css" }}">
     <link rel="stylesheet" href="{{ asset "css/main.css" }}">
-    {{ template "css" . }}
+    <style type="text/css">
+      body {
+        padding-top: 3.5rem;
+        font-family: 'Coda', serif;
+        font-weight: 400;
+        font-size: 1rem;
+        color: #666666;
+      }
+    </style>
+{{ end }}    
+{{ define "end_head" }}  
   </head>
+{{ end }}
+{{ define "body" }}
   <body>
+{{ end }}
+{{ define "content" }}
       <nav id="topbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
           <a class="navbar-brand" href="{{urlpath "Home"}}">Bolsillo</a> <button aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler d-lg-none" data-target="#navbarsExampleDefault" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
           <div class="collapse navbar-collapse" id="navbarsExampleDefault">
@@ -30,7 +46,7 @@
               </li>
             </ul>
             <form class="form-inline mt-2 mt-md-0">
-              <input aria-label="Search" class="form-control form-control-sm mr-sm-2" placeholder="Search" type="text"> <button class="btn btn-sm btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              <input aria-label="Search" class="form-control form-control mr-sm-2" placeholder="Search" type="text"> <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
           </div>
         </nav>
@@ -70,6 +86,7 @@
                 </li>
               </ul>
             </nav>
+           
             <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
               <div>
                 <a class="btn btn-link d-md-none d-sm-none p-0" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
@@ -121,16 +138,19 @@
                 <!--</div>-->
                     </nav>
               </div>
-              {{ yield }}
+ {{ end }}
+ <!-- here go the template content -->
+{{ define "end_content" }}
             </main>
           </div>
         </div>
-        <script src="{{ asset "vendor/jquery/dist/jquery.min.js" }}"></script>
-        <script src="{{ asset "vendor/popper.js/dist/umd/popper.min.js" }}"></script>
-        <script src="{{ asset "vendor/bootstrap/dist/js/bootstrap.min.js" }}"></script>
-        <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-        <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-        {{ template "js" . }}
+    <script src="{{ asset "vendor/jquery/dist/jquery.min.js" }}"></script>
+    <script src="{{ asset "vendor/popper.js/dist/umd/popper.min.js" }}"></script>
+    <script src="{{ asset "vendor/bootstrap/dist/js/bootstrap.min.js" }}"></script>
+{{ end }}
+{{ define "end_body" }}
   </body>
-  </body>
+{{ end }}
+{{ define "end_html" }}
 </html>
+{{ end }}
