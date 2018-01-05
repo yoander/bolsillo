@@ -36,29 +36,16 @@
               placeholder="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
               value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
               readonly>
-            <label class="sr-only" for="inlineFormInputGroupUsername2">Username</label>
-            <div class="input-group mb-2 mr-sm-2">
-              <div class="input-group-prepend">
-                <div class="input-group-text">@</div>
-              </div>
-              <input type="text" class="form-control" id="inlineFormInputGroupUsername2" placeholder="Username">
-            </div>
-
-            <div class="form-check mb-2 mr-sm-2">
-              <input class="form-check-input" type="checkbox" id="inlineFormCheck">
-              <label class="form-check-label" for="inlineFormCheck">
-                Remember me
-              </label>
-            </div>
-
-            <button 
-              type="submit"
-              id="filter" 
-              data-url="{{ urlpath "ListTransactions" }}"
-              class="btn btn-primary mb-2 trigger"
-              onclick="javascript:return false;">
-                <i class="fa fa-filter" aria-hidden="true"></i> Filter
-            </button>
+              <label class="sr-only" for="description">Description</label>
+              <input type="text" class="form-control mb-2 mr-sm-2" id="description" name="keyword" placeholder="Description" value="{{ .keyword }}">
+              <button 
+                type="submit"
+                id="filter" 
+                data-url="{{ urlpath "ListTransactions" }}"
+                class="btn btn-info mb-2 trigger"
+                onclick="javascript:return false;">
+                  <i class="fa fa-filter" aria-hidden="true"></i> Filter
+              </button>
           </form>
         </div>
       </div>

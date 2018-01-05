@@ -136,10 +136,18 @@ func main() {
 			endDate = s.GetString("endDate")
 		}
 
+		keyword := ctx.FormValue("keyword")
+		if keyword != "" {
+			s.Set("keyword", keyword)
+		} else {
+			keyword = s.GetString("keyword")
+		}
+
 		ctx.ViewData("startDate", startDate)
 		ctx.ViewData("endDate", endDate)
+		ctx.ViewData("keyword", keyword)
 		ctx.ViewData("Title", "Transactions")
-		if transactions, err := controllers.Transactions.GetFilteredTransactions(startDate, endDate); err == nil {
+		if transactions, err := controllers.Transactions.GetFilteredTransactions(startDate, endDate, keyword); err == nil {
 			ctx.ViewData("transactions", transactions)
 		} else {
 			error500(ctx, err.Error(), "Error listing transactions!!!")

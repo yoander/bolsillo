@@ -57,7 +57,7 @@ func (*transaction) Read(ctx context.Context) {
 }
 
 // List transactions
-func (*transaction) GetFilteredTransactions(startDate string, endDate string) (models.TransactionSlice, error) {
+func (*transaction) GetFilteredTransactions(startDate string, endDate string, keyword string) (models.TransactionSlice, error) {
 	sDate, err := time.Parse("02.01.2006", startDate)
 	eDate, err := time.Parse("02.01.2006", endDate)
 
@@ -68,11 +68,16 @@ func (*transaction) GetFilteredTransactions(startDate string, endDate string) (m
 	}
 
 	// Eager loading
-	transactions, err := models.Transactions(DB,
-		q.Where("deleted = ?", 0),
-		q.And("date BETWEEN ? AND ?", sDate, eDate),
-		q.OrderBy("date DESC, id DESC"),
-		q.Load("Tags")).All()
+	queries := []q.QueryMod{}
+	queries = append(queries, q.Where("deleted = ?", 0))
+	queries = append(queries, q.And("date BETWEEN ? AND ?", sDate, eDate))
+	if keyword != "" {
+		queries = append(queries, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
+	}
+	queries = append(queries, q.OrderBy("date DESC, id DESC"))
+	queries = append(queries, q.Load("Tags"))
+
+	transactions, err := models.Transactions(DB, queries...).All()
 
 	return transactions, err
 }

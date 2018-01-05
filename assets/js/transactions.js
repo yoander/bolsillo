@@ -16,6 +16,7 @@ $(document).ready(function () {
             data: {
                startDate: $('#startDate').val(),
                endDate: $('#endDate').val(),
+               keyword: $('#description').val(),
             },
             success: function(data) {
                 $('#transTable').html(data);
