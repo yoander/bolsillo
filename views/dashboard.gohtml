@@ -1,3 +1,8 @@
+{{ template "html" }}
+  {{ template "head" }}
+  {{ template "end_head" }}
+  {{ template "body" }}
+    {{ template "content" . }}
 <h1>Dashboard</h1>
 <section class="row text-center placeholders">
   <div class="col-6 col-sm-3 placeholder">
@@ -24,3 +29,6 @@
 <div class="table-responsive">
 
 </div>
+    {{ template "end_content" }}
+  {{ template "end_body" }}
+{{ template "end_html" }}
