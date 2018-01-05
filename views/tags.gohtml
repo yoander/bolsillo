@@ -1,26 +1,37 @@
-<div class="col-5">
-  <h2>Tags <a type="submit" class="btn btn-primary btn-sm float-right mr-3" href="{{urlpath "EditTag" "0"}}"><i class="fa fa-file" aria-hidden="true"></i> New</a></h2>
-  <table id="tags" class="table table-responsive table-striped table-sm col-5">
-    <thead>
-      <tr>
-        <th style="width:5%">#</th>
-        <th style="width:85%">Tag</th>
-        <th style="width:10%"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {{ range $i, $_ := .Tags }}
-        <tr>
-          <td style="width:5%">{{ inc $i 1 }}</td>
-          <td style="width:85%">{{ .Tag }}</td>
-          <td style="width:10%">
-            <div class="btn-group" role="group" aria-label="Basic example">
-              <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTag" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-              <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTag" (.ID|printf "%d") }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-            </div>
-          </td>
-        </tr>
-      {{ end }}
-    </tbody>
-  </table>
-</div>
+{{ template "html" }}
+  {{ template "head" }}
+  {{ template "end_head" }}
+  {{ template "body" }}
+    {{ template "content" . }}
+      <div class="col-5">
+        <div class="clearfix">
+          <h2 class="float-left">Tags</h2>
+          <a class="btn btn-success my-2 my-sm-0 float-right" href="{{urlpath "EditTag" "0"}}" role="button"><i class="fa fa-file-text" aria-hidden="true"></i> New</a>
+        </div>
+        <table id="tags" class="table table-responsive table-striped table-sm col-5">
+          <thead>
+            <tr>
+              <th style="width:5%">#</th>
+              <th style="width:85%">Tag</th>
+              <th style="width:10%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range $i, $_ := .Tags }}
+              <tr>
+                <td style="width:5%">{{ inc $i 1 }}</td>
+                <td style="width:85%">{{ .Tag }}</td>
+                <td style="width:10%">
+                  <div class="btn-group" role="group" aria-label="Basic example">
+                    <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTag" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                    <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTag" (.ID|printf "%d") }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                  </div>
+                </td>
+              </tr>
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+    {{ template "end_content" }}
+  {{ template "end_body" }}
+{{ template "end_html" }}
