@@ -115,12 +115,12 @@ func (*transaction) Save(ID uint,
 	status string,
 	date time.Time,
 	isExpensive int8,
-	tags []string) error {
-	fmt.Println("Saving tx....")
+	tags []string,
+) error {
+	//fmt.Println("Saving tx....")
 	// Transaction Object
 	var tx models.Transaction
 	tx.ID = ID
-
 	tx.PersonID = userID
 	tx.Type = transactionType
 	tx.Description = desc
@@ -149,7 +149,7 @@ func (*transaction) Save(ID uint,
 		return err
 	}
 
-	fmt.Println("tags in save", tags)
+	//fmt.Println("tags in save", tags)
 	count := len(tags)
 	if count > 0 {
 		// See https://github.com/golang/go/wiki/InterfaceSlice
