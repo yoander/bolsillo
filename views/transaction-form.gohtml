@@ -1,15 +1,15 @@
 {{ template "html" }}
   {{ template "head" }}
     <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/jquery-flexdatalist/jquery.flexdatalist.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" }}">
     <link rel="stylesheet" href="{{ asset "css/transaction-form.css" }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
         <h2>{{ .action }} Transaction</h2>
         <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
-            <input id="tags" type="hidden" name="Tags" value="[{{ with $.txTags }}{{ join_tags . "id" }}{{ end }}]">
-            <!--<input id="id" type="hidden" name="ID" value="0">-->
             <div class="form-row">
                 <div class="col-5">
                     <div class="form-group">
@@ -32,10 +32,10 @@
                     </div>
                     <div class="form-group">
                         <label class="form-control-label" for="invoice">Invoice</label>
-                        <select class="custom-select form-control" id="invoice" name="Invoice">
+                        <select class="custom-select form-control selectpicker" id="invoice" name="Invoice" data-live-search="true">
                             <option value="0">Select one item</option>
                             {{ range .invoices }}
-                            <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
+                                <option value="{{ .ID }}"{{ if $.tx }}{{ if eq $.tx.InvoiceID.Uint .ID }} selected="selected"{{ end }}{{ end }}>{{ date .Date "02.01.2006" }}/{{.Code}}/{{ .Note }}</option>
                             {{ end }}
                         </select>
                     </div>
@@ -108,6 +108,7 @@
                         <div>
                             <input 
                                 type="text" 
+                                name="tags"
                                 class="form-control form-control-sm flexdatalist" 
                                 data-min-length="1" 
                                 multiple="multiple" 
@@ -138,7 +139,8 @@
     {{ template "end_content" }}
     <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
     <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-    <script src="{{ asset "vendor/jQuery.Flexdatalist/jquery.flexdatalist.min.js" }}"></script>
-    <script src="{{ asset "js/tags.js" }}"></script>
+    <script src="{{ asset "vendor/jquery-flexdatalist/jquery.flexdatalist.min.js" }}"></script>
+    <script src="{{ asset "vendor/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

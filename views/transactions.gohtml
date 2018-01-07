@@ -1,7 +1,7 @@
 {{ template "html" }}
   {{ template "head" }}
     <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/noty/lib/noty.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/toastr/build/toastr.min.css" }}">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
@@ -55,7 +55,7 @@
     {{ template "end_content" }}
     <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
     <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-    <script src="{{ asset "vendor/noty/lib/noty.min.js" }}"></script>
+    <script src="{{ asset "vendor/toastr/build/toastr.min.js" }}"></script>
     <script src="{{ asset "js/transactions.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

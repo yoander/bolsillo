@@ -2,7 +2,10 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/kataras/iris/view"
@@ -28,7 +31,7 @@ func error500(ctx context.Context, msg string, header string) {
 
 func main() {
 	//p := fmt.Println
-	//f := fmt.Sprintf
+	f := fmt.Sprintf
 	app := iris.New() // defaults to these
 	rv := router.NewRoutePathReverser(app)
 	controllers.ReverseRouter = rv
@@ -82,7 +85,7 @@ func main() {
 	app.RegisterView(tpl.Ngx)
 
 	// Register static content
-	app.StaticWeb("/assets", "./assets")
+	app.StaticWeb("/assets", "./web")
 
 	app.UseGlobal(func(ctx context.Context) {
 		ctx.Gzip(true)
@@ -137,7 +140,7 @@ func main() {
 		}
 
 		keyword := ctx.FormValue("keyword")
-		if keyword != "" {
+		if ctx.IsAjax() {
 			s.Set("keyword", keyword)
 		} else {
 			keyword = s.GetString("keyword")
@@ -147,7 +150,19 @@ func main() {
 		ctx.ViewData("endDate", endDate)
 		ctx.ViewData("keyword", keyword)
 		ctx.ViewData("Title", "Transactions")
-		if transactions, err := controllers.Transactions.GetFilteredTransactions(startDate, endDate, keyword); err == nil {
+
+		initDate, err := time.Parse("02.01.2006", startDate)
+		finDate, err := time.Parse("02.01.2006", endDate)
+
+		if err != nil {
+			now := time.Now().Local()
+			initDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+			finDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+		}
+
+		if transactions, err := controllers.
+			Transactions.
+			GetFilteredTransactions(initDate, finDate, keyword); err == nil {
 			ctx.ViewData("transactions", transactions)
 		} else {
 			error500(ctx, err.Error(), "Error listing transactions!!!")
@@ -169,7 +184,59 @@ func main() {
 	app.Get("/transaction/clone/{id:string}", controllers.Transactions.Clone).Name = "CloneTransaction" // Also New
 
 	// Save a transaction
-	app.Post("/transaction/save/{id:string}", controllers.Transactions.Save).Name = "SaveTransaction"
+	app.Post("/transaction/save/{id:string}", func(ctx context.Context) {
+		id := ctx.Params().Get("id")
+		ID, err := strconv.ParseUint(id, 10, 64)
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+
+		isExpensive, err := strconv.ParseUint(ctx.PostValue("IsExpensive"), 10, 8)
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+
+		date, err := time.Parse("02.01.2006", ctx.PostValue("Date"))
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+		// Set correct date time
+		date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
+
+		invoiceID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8)
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+
+		unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8)
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+		//tags :=
+		err = controllers.Transactions.Save(uint(ID),
+			uint(invoiceID),
+			uint8(unitID),
+			1,
+			0,
+			ctx.PostValue("Type"),
+			ctx.PostValue("Description"),
+			ctx.PostValue("Note"),
+			ctx.PostValue("Quantity"),
+			ctx.PostValue("UnitPrice"),
+			ctx.PostValue("TotalPrice"),
+			ctx.PostValue("Status"),
+			date,
+			int8(isExpensive),
+			strings.Split(ctx.PostValue("tags"), ","))
+
+		//fmt.Println("tags", strings.Split(ctx.PostValue("tags"), ","))
+		if err != nil {
+			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		}
+
+		ctx.Redirect(rv.Path("ListTransactions"))
+
+	}).Name = "SaveTransaction"
 
 	// Delete one transaction
 	app.Get("/transaction/delete/{id:string}", controllers.Transactions.SoftDelete).Name = "DeleteTransaction"

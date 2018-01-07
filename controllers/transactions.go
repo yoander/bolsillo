@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"encoding/json"
+	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/kataras/iris/context"
@@ -57,20 +56,13 @@ func (*transaction) Read(ctx context.Context) {
 }
 
 // List transactions
-func (*transaction) GetFilteredTransactions(startDate string, endDate string, keyword string) (models.TransactionSlice, error) {
-	sDate, err := time.Parse("02.01.2006", startDate)
-	eDate, err := time.Parse("02.01.2006", endDate)
-
-	if err != nil {
-		now := time.Now().Local()
-		sDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
-		eDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-	}
-
+func (*transaction) GetFilteredTransactions(startDate time.Time,
+	endDate time.Time,
+	keyword string) (models.TransactionSlice, error) {
 	// Eager loading
 	queries := []q.QueryMod{}
 	queries = append(queries, q.Where("deleted = ?", 0))
-	queries = append(queries, q.And("date BETWEEN ? AND ?", sDate, eDate))
+	queries = append(queries, q.And("date BETWEEN ? AND ?", startDate, endDate))
 	if keyword != "" {
 		queries = append(queries, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
 	}
@@ -109,71 +101,74 @@ func (*transaction) Clone(ctx context.Context) {
 }
 
 // Save one transaction
-func (*transaction) Save(ctx context.Context) {
-	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
-		error500(ctx, err.Error(), f("Error saving transactions %d", ID))
+func (*transaction) Save(ID uint,
+	invoiceID uint,
+	unitID uint8,
+	userID uint16,
+	identityID uint,
+	transactionType string,
+	desc string,
+	note string,
+	quantity string,
+	unitPrice string,
+	totalPrice string,
+	status string,
+	date time.Time,
+	isExpensive int8,
+	tags []string) error {
+	fmt.Println("Saving tx....")
+	// Transaction Object
+	var tx models.Transaction
+	tx.ID = ID
+
+	tx.PersonID = userID
+	tx.Type = transactionType
+	tx.Description = desc
+	tx.Note = note
+	tx.Quantity = quantity
+	tx.Price = unitPrice
+	tx.TotalPrice = totalPrice
+	tx.Status = status
+	tx.IsExpensive = isExpensive
+	tx.Date = date
+	if invoiceID > 0 {
+		tx.InvoiceID.SetValid(invoiceID)
+	}
+	if unitID > 0 {
+		tx.UnitID.SetValid(unitID)
+	}
+
+	var err error
+	if ID > 0 {
+		err = tx.Update(DB)
 	} else {
-		var tx models.Transaction
-		tx.ID = uint(ID)
-		tx.PersonID = 1
-		tx.Type = ctx.PostValue("Type")
-		tx.Description = ctx.PostValue("Description")
-		tx.Note = ctx.PostValue("Note")
-		tx.TotalPrice = ctx.PostValue("TotalPrice")
-		tx.Quantity = ctx.PostValue("Quantity")
-		tx.Price = ctx.PostValue("UnitPrice")
-		tx.Status = ctx.PostValue("Status")
-		if date, err := time.Parse("02.01.2006", ctx.PostValue("Date")); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		} else {
-			tx.Date = time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 999999999, time.UTC)
+		err = tx.Insert(DB)
+	}
+	if err != nil {
+		fmt.Println("Error saving", invoiceID, err)
+		return err
+	}
+
+	fmt.Println("tags in save", tags)
+	count := len(tags)
+	if count > 0 {
+		// See https://github.com/golang/go/wiki/InterfaceSlice
+		tagSet := make([]interface{}, count)
+		for i, t := range tags {
+			tagSet[i] = t
 		}
-
-		if invID, err := strconv.ParseUint(ctx.PostValue("Invoice"), 10, 8); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		} else if invID > 0 {
-			tx.InvoiceID.SetValid(uint(invID))
-		}
-
-		if unitID, err := strconv.ParseUint(ctx.PostValue("Unit"), 10, 8); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		} else if unitID > 0 {
-			tx.UnitID.SetValid(uint8(unitID))
-		}
-
-		if isExpensive, err := strconv.ParseUint(ctx.PostValue("IsExpensive"), 10, 8); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		} else {
-			tx.IsExpensive = int8(isExpensive)
-		}
-
-		updTags := true
-
-		if tx.ID > 0 {
-			if err := tx.Update(DB); err != nil {
-				updTags = false
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			}
-		} else if err := tx.Insert(DB); err != nil {
-			error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-		}
-
-		if updTags {
-			var IDs []interface{}
-			if err := json.NewDecoder(strings.NewReader(ctx.PostValue("Tags"))).Decode(&IDs); err != nil {
-				error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-			}
-
-			if len(IDs) > 0 {
-				if tags, err := models.Tags(DB, q.Select("id"), q.WhereIn("id IN ?", IDs...)).All(); err != nil {
-					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-				} else if err := tx.SetTags(DB, false, tags...); err != nil {
-					error500(ctx, err.Error(), f("Error saving transactions %d", ID))
-				}
-			}
+		//fmt.Println("saving tags", tagSet)
+		tagEntities, err := models.Tags(DB, q.Select("id"), q.WhereIn("tag IN ?", tagSet...)).All()
+		if err == nil {
+			err = tx.SetTags(DB, false, tagEntities...)
 		}
 	}
-	ctx.Redirect(ReverseRouter.Path("ListTransactions"))
+
+	/*if err != nil {
+		fmt.Println("Error saving", tags, err)
+	}*/
+
+	return err
 }
 
 // SoftDelete mark an transaction as deleted
