@@ -76,18 +76,12 @@ DELIMITER ;;
 CREATE TRIGGER `transaction_BEFORE_INSERT` BEFORE INSERT ON `transactions` FOR EACH ROW
 BEGIN
 	SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
-	/* Total price has priority over unit price */
+	/* 
+     * Total price has priority over unit price 
+     * NULL IS NOT > 0
+     */
     IF NEW.total_price > 0 THEN
-        /* Calculate unit price */
-        SET @total_price = IF(NEW.total_price > 1, NEW.total_price * 100, NEW.total_price);
-        SET @unit_price = @total_price / @quantity;
-        /*IF NEW.unit_id > 0 THEN
-			SET @unit_price = (SELECT @total_price / (IFNULL(base_relation, 1) * @quantity) FROM units WHERE id = NEW.unit_id);
-        ELSE
-			SET @unit_price = @total_price / @quantity;
-        END IF;*/
-        SET NEW.price = IF(@unit_price > 1, @unit_price / 100, @unit_price);
-	/* Total price == unit price * quantity */
+        SET NEW.price = NEW.total_price / @quantity;
     ELSE
 		SET NEW.total_price = NEW.price * @quantity;
     END IF;
@@ -96,18 +90,12 @@ END;;
 CREATE TRIGGER `transaction_BEFORE_UPDATE` BEFORE UPDATE ON `transactions` FOR EACH ROW
 BEGIN
 	SET @quantity = IF(NEW.quantity > 0, NEW.quantity, 1);
-	/* Total price has priority over unit price */
+	/* 
+     * Total price has priority over unit price 
+     * NULL IS NOT > 0
+     */
     IF NEW.total_price > 0 THEN
-        /* Calculate unit price */
-        SET @total_price = IF(NEW.total_price > 1, NEW.total_price * 100, NEW.total_price);
-        SET @unit_price = @total_price / @quantity;
-        /*IF NEW.unit_id > 0 THEN
-			SET @unit_price = (SELECT @total_price / (IFNULL(base_relation, 1) * @quantity) FROM units WHERE id = NEW.unit_id);
-        ELSE
-			SET @unit_price = @total_price / @quantity;
-        END IF;*/
-        SET NEW.price = IF(@unit_price > 1, @unit_price / 100, @unit_price);
-	/* Total price == unit price * quantity */
+        SET NEW.price = NEW.total_price / @quantity;
     ELSE
 		SET NEW.total_price = NEW.price * @quantity;
     END IF;
@@ -142,4 +130,4 @@ CREATE TABLE `units` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=' International System of Units ';
 
 
--- 2017-11-11 00:33:48
+-- 2018-01-05 21:11:13
