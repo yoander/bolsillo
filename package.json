@@ -1,14 +1,14 @@
 {
   "scripts": {
-    "inst": "yarn add --modules-folder ./assets/vendor",
-    "del": "yarn remove --modules-folder ./assets/vendor"
+    "inst": "yarn add --modules-folder ./web/vendor",
+    "del": "yarn remove --modules-folder ./web/vendor"
   },
   "dependencies": {
-    "air-datepicker": "^2.2.3",
     "bootstrap": "4.0.0-beta.3",
+    "bootstrap-select": "^1.12.4",
+    "flatpickr": "^4.2.3",
     "font-awesome": "^4.7.0",
-    "jQuery.Flexdatalist": "https://github.com/sergiodlopes/jquery-flexdatalist/archive/2.2.2.tar.gz",
-    "noty": "^3.1.4",
-    "popper.js": "1.11.0"
+    "jquery-flexdatalist": "^2.1.4",
+    "toastr": "^2.1.4"
   }
 }

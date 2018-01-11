@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -10,7 +9,7 @@ import (
 	"github.com/kataras/iris/context"
 	q "github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/yoander/bolsillo/models"
-	"gopkg.in/volatiletech/null.v6"
+	null "gopkg.in/volatiletech/null.v6"
 )
 
 // Invoice unexported
@@ -57,7 +56,7 @@ func (*invoice) List(ctx context.Context) {
 		),
 	).Bind(&invo)
 
-	fmt.Printf("%v", invo)
+	//fmt.Printf("%v", invo)
 
 	// Eager loading
 	//inv, err := models.Invoices(DB, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()

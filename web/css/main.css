@@ -96,7 +96,15 @@ table#invoices tbody td:nth-child(4) {
 .info {
   font-size: 0.8rem;
 }
-
+/*
 .datepicker {
   font-family: inherit;
+}*/
+
+.flatpickr-current-month {
+    font-size: 105%;
+}
+
+.badge-light {
+    color: #666666;
 }

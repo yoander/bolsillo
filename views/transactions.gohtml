@@ -1,6 +1,6 @@
 {{ template "html" }}
   {{ template "head" }}
-    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/flatpickr/dist/flatpickr.min.css" }}">
     <link rel="stylesheet" href="{{ asset "vendor/toastr/build/toastr.min.css" }}">
   {{ template "end_head" }}
   {{ template "body" }}
@@ -15,25 +15,21 @@
             <label class="sr-only" for="startDate">Start Date</label>
             <input 
               type="text" 
-              class="form-control mb-2 mr-sm-2 datepicker-here" 
+              class="form-control mb-2 mr-sm-2 col-1 datepicker" 
               data-language="en" 
-              data-auto-close="true" 
-              data-date-format="dd.mm.yyyy" 
+              data-date-format="d.m.Y" 
               id="startDate" 
-              name="startDate" 
-              placeholder="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+              name="startDate"
               value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
               readonly>
             <label class="sr-only" for="endDate">End Date</label>
             <input 
               type="text" 
-              class="form-control mb-2 mr-sm-2 datepicker-here" 
+              class="form-control mb-2 mr-sm-2 col-1 datepicker" 
               data-language="en" 
-              data-auto-close="true" 
-              data-date-format="dd.mm.yyyy" 
+              data-date-format="d.m.Y"
               id="endDate" 
               name="endDate" 
-              placeholder="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
               value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
               readonly>
               <label class="sr-only" for="description">Description</label>
@@ -53,9 +49,9 @@
         {{ render "transactions-table.gohtml" }}
       </div>
     {{ template "end_content" }}
-    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
+    <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "vendor/toastr/build/toastr.min.js" }}"></script>
+    <script src="{{ asset "js/datepicker.js" }}"></script>
     <script src="{{ asset "js/transactions.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

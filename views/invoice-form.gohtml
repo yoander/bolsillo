@@ -1,6 +1,6 @@
 {{ template "html" }}
   {{ template "head" }}
-    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
+     <link rel="stylesheet" href="{{ asset "vendor/flatpickr/dist/flatpickr.min.css" }}">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
@@ -15,7 +15,15 @@
                     </div>
                     <div class="form-group">
                         <label class="form-control-label" for="date">Date</label>
-                        <input type="text" class="form-control datepicker-here" data-language="en" data-auto-close="true" data-date-format="dd.mm.yyyy" id="date" name="Date" placeholder="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" value="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" readonly>
+                        <input 
+                            type="text" 
+                            class="form-control datepicker" 
+                            data-language="en" 
+                            data-date-format="d.m.Y" 
+                            id="date" 
+                            name="Date" 
+                            value="{{ if .inv }}{{ date .inv.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+                            readonly>
                     </div>
                      <div class="form-group">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons" id="type">
@@ -42,7 +50,7 @@
             </div>
         </form>
     {{ template "end_content" }}
-    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
+    <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
+     <script src="{{ asset "js/datepicker.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

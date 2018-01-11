@@ -1,10 +1,9 @@
 {{ template "html" }}
   {{ template "head" }}
-    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/flatpickr/dist/flatpickr.min.css" }}">
     <link rel="stylesheet" href="{{ asset "vendor/jquery-flexdatalist/jquery.flexdatalist.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/bootstrap-multiselect/dist/css/bootstrap-multiselect.css" }}">
+    <link rel="stylesheet" href="{{ asset "vendor/bootstrap-select/dist/css/bootstrap-select.min.css" }}">
     <link rel="stylesheet" href="{{ asset "css/transaction-form.css" }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
@@ -20,10 +19,10 @@
                         <label class="form-control-label" for="date">Date</label>
                         <input 
                             type="text" 
-                            class="form-control datepicker-here" 
+                            class="form-control datepicker" 
                             data-language="en" 
                             data-auto-close="true" 
-                            data-date-format="dd.mm.yyyy" 
+                            data-date-format="d.m.Y" 
                             id="date" 
                             name="Date" 
                             placeholder="{{ if .tx }}{{ date .tx.Date "02.01.2006" }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
@@ -137,10 +136,9 @@
             </div>
         </form>
     {{ template "end_content" }}
-    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
+    <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "vendor/jquery-flexdatalist/jquery.flexdatalist.min.js" }}"></script>
-    <script src="{{ asset "vendor/bootstrap-multiselect/dist/js/bootstrap-multiselect.js" }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+    <script src="{{ asset "vendor/bootstrap-select/dist/js/bootstrap-select.min.js" }}"></script>
+    <script src="{{ asset "js/datepicker.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

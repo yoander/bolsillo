@@ -1,7 +1,6 @@
 {{ template "html" }}
   {{ template "head" }}
-    <link rel="stylesheet" href="{{ asset "vendor/air-datepicker/dist/css/datepicker.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/noty/lib/noty.css" }}">
+    <!-- Some CSS here -->
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
@@ -9,7 +8,7 @@
         <h2 class="float-left">Invoices</h2>
         <a class="btn btn-success my-2 my-sm-0 float-right" href="{{urlpath "EditInvoice" "0"}}" role="button"><i class="fa fa-file" aria-hidden="true"></i> New</a>
       </div>
-      <table id="invoices" class="table table-responsive table-striped table-sm mt-3">
+      <table id="invoices" class="table table-responsive table-striped table-sm">
         <thead>
           <tr>
             <th>#</th>
@@ -47,8 +46,6 @@
         </tbody>
       </table>
     {{ template "end_content" }}
-    <script src="{{ asset "vendor/air-datepicker/dist/js/datepicker.min.js" }}"></script>
-    <script src="{{ asset "vendor/air-datepicker/dist/js/i18n/datepicker.en.js" }}"></script>
-    <script src="{{ asset "vendor/noty/lib/noty.min.js" }}"></script>
+    <!-- Some JS here -->
   {{ template "end_body" }}
 {{ template "end_html" }}

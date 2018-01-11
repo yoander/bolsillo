@@ -158,6 +158,8 @@ func main() {
 			now := time.Now().Local()
 			initDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
 			finDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+		} else {
+			finDate = time.Date(finDate.Year(), finDate.Month(), finDate.Day(), 23, 59, 59, 99999999999, time.Local)
 		}
 
 		if transactions, err := controllers.
