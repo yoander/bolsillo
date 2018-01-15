@@ -6,18 +6,24 @@
     {{ template "content" . }}
        <div class="clearfix">
         <h2 class="float-left">Invoices</h2>
-        <a class="btn btn-success my-2 my-sm-0 float-right" href="{{urlpath "EditInvoice" "0"}}" role="button"><i class="fa fa-file" aria-hidden="true"></i> New</a>
       </div>
-      <table id="invoices" class="table table-responsive table-striped table-sm">
+      <table id="invoices" class="table table-responsive table-responsive-lg table-striped table-sm">
         <thead>
           <tr>
-            <th>#</th>
-            <th>Code</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Note</th>
-            <th>Price</th>
-            <th></th>
+            <th style="width:5%">#</th>
+            <th style="width:15%">Code</th>
+            <th style="width:5%">Date</th>
+            <th style="width:5%">Status</th>
+            <th style="width:50%">Note</th>
+            <th style="width:10%">Price</th>
+            <th style="width:10%">
+              <a 
+                class="btn btn-success btn-sm my-2 my-sm-0 float-right" 
+                href="{{urlpath "EditInvoice" "0"}}" 
+                role="button">
+                  <i class="fa fa-file" aria-hidden="true"></i> New
+              </a>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +41,7 @@
               <td>{{ .Note }}</td>
               <td>{{ .Price.Value }}</td>
               <td>
-                <div class="btn-group" role="group" aria-label="Basic example">
+                <div class="btn-group float-right" role="group" aria-label="Basic example">
                   <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditInvoice" (.ID|printf "%d") }}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
                   <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneInvoice" (.ID|printf "%d") }}"><i class="fa fa-clone" aria-hidden="true"></i></a>
                   <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteInvoice" (.ID|printf "%d") }}"><i class="fa fa-trash-o" aria-hidden="true"></i></a>

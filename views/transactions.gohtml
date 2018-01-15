@@ -1,56 +1,49 @@
 {{ template "html" }}
   {{ template "head" }}
     <link rel="stylesheet" href="{{ asset "vendor/flatpickr/dist/flatpickr.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/toastr/build/toastr.min.css" }}">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
       <div class="clearfix">
         <h2 class="float-left">Transactions</h2>
-        <a class="btn btn-success my-2 my-sm-0 float-right" href="{{urlpath "EditTransaction" "0"}}" role="button"><i class="fa fa-file-text" aria-hidden="true"></i> New</a>
       </div>
-      <div class="card mb-3">  
-        <div class="card-body">
-          <form class="form-inline">
-            <label class="sr-only" for="startDate">Start Date</label>
-            <input 
-              type="text" 
-              class="form-control mb-2 mr-sm-2 col-1 datepicker" 
-              data-language="en" 
-              data-date-format="d.m.Y" 
-              id="startDate" 
-              name="startDate"
-              value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
-              readonly>
-            <label class="sr-only" for="endDate">End Date</label>
-            <input 
-              type="text" 
-              class="form-control mb-2 mr-sm-2 col-1 datepicker" 
-              data-language="en" 
-              data-date-format="d.m.Y"
-              id="endDate" 
-              name="endDate" 
-              value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
-              readonly>
-              <label class="sr-only" for="description">Description</label>
-              <input type="text" class="form-control mb-2 mr-sm-2" id="description" name="keyword" placeholder="Description" value="{{ .keyword }}">
-              <button 
-                type="submit"
-                id="filter" 
-                data-url="{{ urlpath "ListTransactions" }}"
-                class="btn btn-info mb-2 trigger"
-                onclick="javascript:return false;">
-                  <i class="fa fa-filter" aria-hidden="true"></i> Filter
-              </button>
-          </form>
-        </div>
-      </div>
+      <form class="form-inline">
+        <label class="sr-only" for="startDate">Start Date</label>
+        <input 
+          type="text" 
+          class="form-control mb-2 mr-sm-2 col-1 datepicker" 
+          data-language="en" 
+          data-date-format="d.m.Y" 
+          id="startDate" 
+          name="startDate"
+          value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+          readonly>
+        <label class="sr-only" for="endDate">End Date</label>
+        <input 
+          type="text" 
+          class="form-control mb-2 mr-sm-2 col-1 datepicker" 
+          data-language="en" 
+          data-date-format="d.m.Y"
+          id="endDate" 
+          name="endDate" 
+          value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+          readonly>
+          <label class="sr-only" for="description">Description</label>
+          <input type="text" class="form-control mb-2 mr-sm-2" id="description" name="keyword" placeholder="Description" value="{{ .keyword }}">
+          <button 
+            type="submit"
+            id="filter" 
+            data-url="{{ urlpath "ListTransactions" }}"
+            class="btn btn-info mb-2 trigger"
+            onclick="javascript:return false;">
+              <i class="fa fa-filter" aria-hidden="true"></i> Filter
+          </button>
+      </form>
       <div id="transTable">
         {{ render "transactions-table.gohtml" }}
       </div>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
-    <script src="{{ asset "vendor/toastr/build/toastr.min.js" }}"></script>
     <script src="{{ asset "js/datepicker.js" }}"></script>
     <script src="{{ asset "js/transactions.js" }}"></script>
   {{ template "end_body" }}

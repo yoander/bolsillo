@@ -14,7 +14,14 @@
       <th style="width:6%">Date</th>
       <!--<th>Note</th>-->
       <th style="width:24%">Tags</th>
-      <th style="width:810%"></th>
+      <th style="width:10%">
+        <a 
+          class="btn btn-sm btn-success my-2 my-sm-0 float-right" 
+          href="{{urlpath "EditTransaction" "0"}}" 
+          role="button">
+            <i class="fa fa-file-text" aria-hidden="true"></i> New
+        </a>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -47,11 +54,11 @@
           {{ range .R.Tags }}<a class="tag badge badge-light" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> {{ end }}{{ if eq .IsExpensive 1 }}<a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>{{ end }}
         </td>
         <td style="width:8%">
-          <div class="btn-group" role="group" aria-label="Basic example">
-          <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-          <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
-          <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-        </div>
+          <div class="btn-group float-right" role="group" aria-label="Action Buttons: Edit, Clone, Delete">
+            <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+            <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
+            <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+          </div>
       </td>
       </tr>
     {{ end }}
