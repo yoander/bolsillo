@@ -71,13 +71,13 @@ func (*transaction) GetFilteredTransactions(startDate time.Time,
 
 	transactions, err := models.Transactions(DB, sqlBuilder...).All()
 
-	if err != nil {
+	if err != nil || len(transactions) == 0 {
 		return transactions, 0, 0, 0, err
 	}
 
 	sqlBuilder = nil
 	sqlBuilder = append(sqlBuilder,
-		q.Select("SUM(total_price) AS expenses"),
+		q.Select("IFNULL(SUM(total_price), 0) AS expenses"),
 		//	q.From("transactions"),
 		q.Where("type = ?", "EXP"),
 		q.And("deleted = ?", 0),
@@ -87,18 +87,15 @@ func (*transaction) GetFilteredTransactions(startDate time.Time,
 		sqlBuilder = append(sqlBuilder, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
 	}
 
-	//fmt.Println(queries)
-
 	row := models.Transactions(DB, sqlBuilder...).QueryRow()
 	var expenses float64
-
 	if err := row.Scan(&expenses); err != nil {
 		return transactions, 0, 0, 0, err
 	}
 
 	sqlBuilder = nil
 	sqlBuilder = append(sqlBuilder,
-		q.Select("SUM(total_price) AS incomes"),
+		q.Select("IFNULL(SUM(total_price), 0) AS incomes"),
 		//q.From("transactions"),
 		q.Where("type = ?", "INC"),
 		q.And("deleted = ?", 0),
