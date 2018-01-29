@@ -58,20 +58,64 @@ func (*transaction) Read(ctx context.Context) {
 // List transactions
 func (*transaction) GetFilteredTransactions(startDate time.Time,
 	endDate time.Time,
-	keyword string) (models.TransactionSlice, error) {
-	// Eager loading
-	queries := []q.QueryMod{}
-	queries = append(queries, q.Where("deleted = ?", 0))
-	queries = append(queries, q.And("date BETWEEN ? AND ?", startDate, endDate))
+	keyword string) (models.TransactionSlice, float64, float64, float64, error) {
+	sqlBuilder := []q.QueryMod{}
+	sqlBuilder = append(sqlBuilder, q.Select("id, description, type, status, price, total_price, date, note, unit_id"))
+	sqlBuilder = append(sqlBuilder, q.Where("deleted = ?", 0))
+	sqlBuilder = append(sqlBuilder, q.And("date BETWEEN ? AND ?", startDate, endDate))
 	if keyword != "" {
-		queries = append(queries, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
+		sqlBuilder = append(sqlBuilder, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
 	}
-	queries = append(queries, q.OrderBy("date DESC, id DESC"))
-	queries = append(queries, q.Load("Tags"))
+	sqlBuilder = append(sqlBuilder, q.OrderBy("date DESC, id DESC"))
+	sqlBuilder = append(sqlBuilder, q.Load("Tags", "Unit"))
 
-	transactions, err := models.Transactions(DB, queries...).All()
+	transactions, err := models.Transactions(DB, sqlBuilder...).All()
 
-	return transactions, err
+	if err != nil {
+		return transactions, 0, 0, 0, err
+	}
+
+	sqlBuilder = nil
+	sqlBuilder = append(sqlBuilder,
+		q.Select("SUM(total_price) AS expenses"),
+		//	q.From("transactions"),
+		q.Where("type = ?", "EXP"),
+		q.And("deleted = ?", 0),
+		q.And("date BETWEEN ? AND ?", startDate, endDate))
+
+	if keyword != "" {
+		sqlBuilder = append(sqlBuilder, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
+	}
+
+	//fmt.Println(queries)
+
+	row := models.Transactions(DB, sqlBuilder...).QueryRow()
+	var expenses float64
+
+	if err := row.Scan(&expenses); err != nil {
+		return transactions, 0, 0, 0, err
+	}
+
+	sqlBuilder = nil
+	sqlBuilder = append(sqlBuilder,
+		q.Select("SUM(total_price) AS incomes"),
+		//q.From("transactions"),
+		q.Where("type = ?", "INC"),
+		q.And("deleted = ?", 0),
+		q.And("date BETWEEN ? AND ?", startDate, endDate))
+
+	if keyword != "" {
+		sqlBuilder = append(sqlBuilder, q.And("CONCAT_WS(':', description, note) LIKE ?", "%"+keyword+"%"))
+	}
+
+	row = models.Transactions(DB, sqlBuilder...).QueryRow()
+	var incomes float64
+
+	if err := row.Scan(&incomes); err != nil {
+		return transactions, expenses, 0, -expenses, err
+	}
+
+	return transactions, expenses, incomes, incomes - expenses, err
 }
 
 // Clone transactions
@@ -134,6 +178,7 @@ func (*transaction) Save(ID uint,
 	if invoiceID > 0 {
 		tx.InvoiceID.SetValid(invoiceID)
 	}
+
 	if unitID > 0 {
 		tx.UnitID.SetValid(unitID)
 	}

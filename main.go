@@ -59,7 +59,7 @@ func main() {
 		return s
 	}*/
 
-	boil.DebugMode = false
+	boil.DebugMode = true
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
@@ -162,10 +162,13 @@ func main() {
 			finDate = time.Date(finDate.Year(), finDate.Month(), finDate.Day(), 23, 59, 59, 99999999999, time.UTC)
 		}
 
-		if transactions, err := controllers.
+		if transactions, expenses, incomes, profit, err := controllers.
 			Transactions.
 			GetFilteredTransactions(initDate, finDate, keyword); err == nil {
 			ctx.ViewData("transactions", transactions)
+			ctx.ViewData("expenses", expenses)
+			ctx.ViewData("incomes", incomes)
+			ctx.ViewData("profit", fmt.Sprintf("%.2f", profit))
 		} else {
 			error500(ctx, err.Error(), "Error listing transactions!!!")
 		}
