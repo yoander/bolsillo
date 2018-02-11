@@ -1,155 +1,129 @@
 {{ define "html" }}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 {{ end }}
 {{ define "head" }}
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Carrois+Gothic">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>Bolsilo. Your finances at your hands</title>
+
     <link rel="stylesheet" href="{{ asset "vendor/bootstrap/dist/css/bootstrap.min.css" }}">
-    <link rel="stylesheet" href="{{ asset "vendor/font-awesome/css/font-awesome.min.css"}}">
     <link rel="stylesheet" href="{{ asset "css/main.css" }}">
-    <style type="text/css">
-      body {
-        padding-top: 3.5rem;
-        font-family: 'Carrois Gothic', serif;
-        font-weight: 400;
-        font-size: 1rem;
-        color: #666666;
-      }
-    </style>
 {{ end }}    
-{{ define "end_head" }}  
+{{ define "end_head" }}
   </head>
 {{ end }}
 {{ define "body" }}
   <body>
 {{ end }}
 {{ define "content" }}
-      <nav id="topbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-          <a class="navbar-brand" href="{{urlpath "Home"}}">Bolsillo</a> <button aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler d-lg-none" data-target="#navbarsExampleDefault" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
-          <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="#">Home<span class="sr-only">(current)</span></a>
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{urlpath "Home"}}"><span data-feather="pocket"></span> Bolsillo</a>
+      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
+      <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+          <a class="nav-link" href="#">Sign out</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link {{active (urlpath "Home") .URI}}" href="{{ urlpath "Home" }}">
+                  <span data-feather="home"></span>
+                  Dashboard <span class="sr-only">(current)</span>
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Settings</a>
+                <a class="nav-link {{ active (urlpath "ListInvoices") .URI }}" href=" {{urlpath "ListInvoices" }}">
+                  <span data-feather="file-text"></span>
+                  Invoices
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Profile</a>
+                <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}">
+                  <span data-feather="dollar-sign"></span>
+                  Transactions
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Help</a>
+                <a class="nav-link" href="#">
+                  <span data-feather="anchor"></span>
+                  Units
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link{{active (urlpath "ListTags") .URI}}" href="{{urlpath "ListTags"}}">
+                  <span data-feather="tag"></span>
+                  Tags
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="bar-chart-2"></span>
+                  Reports
+                </a>
               </li>
             </ul>
-            <form class="form-inline mt-2 mt-md-0">
-              <input aria-label="Search" class="form-control form-control mr-sm-2" placeholder="Search" type="text"> <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Saved reports</span>
+              <a class="d-flex align-items-center text-muted" href="#">
+                <span data-feather="plus-circle"></span>
+              </a>
+            </h6>
+            <ul class="nav flex-column mb-2">
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="file-text"></span>
+                  Current month
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="file-text"></span>
+                  Last quarter
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="file-text"></span>
+                  Social engagement
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="file-text"></span>
+                  Year-end sale
+                </a>
+              </li>
+            </ul>
           </div>
         </nav>
-        <div class="container-fluid">
-          <div class="row">
-            <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                  <a class="nav-link{{active (urlpath "Home") .URI}}" href="{{urlpath "Home"}}">Dashboard<span class="sr-only">(current)</span></a>
-                </li>
-              </ul>
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                  <a class="nav-link{{active (urlpath "ListInvoices") .URI}}" href="{{urlpath "ListInvoices"}}">Invoices</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link{{active (urlpath "ListTransactions") .URI}}" href="{{urlpath "ListTransactions"}}">Transactions</a>
-                </li>
-              </ul>
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                    <a class="nav-link{{active (urlpath "ListTags") .URI}}" href="{{urlpath "ListTags"}}">Tags</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Units</a>
-                </li>
-              </ul>
-              <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Reports</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; Report1</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link{{active (urlpath "EditTransaction" "0") .URI}}" href="{{urlpath "EditTransaction" "0"}}">&#9492; Report2</a>
-                </li>
-              </ul>
-            </nav>
-           
-            <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
-              <div>
-                <a class="btn btn-link d-md-none d-sm-none p-0" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                    <svg class="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30" width="30" height="30" focusable="false"><title>Menu</title><path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M4 7h22M4 15h22M4 23h22"></path></svg>
-                </a>
-              </div>
-              <div class="collapse" id="collapseExample">
-                <!--<div class="card card-body d-md-none d-sm-none p-0">-->
-                    <nav class="d-md-none d-sm-none p-0 bg-light">
-                    <ul class="nav nav-pills flex-column">
-                        <li class="nav-item">
-                          <a class="nav-link active" href="#">Overview <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Reports</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Analytics</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Export</a>
-                        </li>
-                      </ul>
-                      <ul class="nav nav-pills flex-column">
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Nav item</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Nav item again</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">One more nav</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Another nav item</a>
-                        </li>
-                      </ul>
-                      <ul class="nav nav-pills flex-column">
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Nav item again</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">One more nav</a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="nav-link" href="#">Another nav item</a>
-                        </li>
-                      </ul>
-                <!--</div>-->
-                    </nav>
-              </div>
- {{ end }}
+{{ end }}
  <!-- here go the template content -->
 {{ define "end_content" }}
-            </main>
-          </div>
-        </div>
+      </div>
+    </div>
+
     <script src="{{ asset "vendor/jquery/dist/jquery.min.js" }}"></script>
     <script src="{{ asset "vendor/popper.js/dist/umd/popper.min.js" }}"></script>
     <script src="{{ asset "vendor/bootstrap/dist/js/bootstrap.min.js" }}"></script>
+    <script src="{{ asset "vendor/feather-icons/dist/feather.min.js" }}"></script>
 {{ end }}
 {{ define "end_body" }}
-  </body>
+    <script>
+      feather.replace()
+    </script>
 {{ end }}
 {{ define "end_html" }}
 </html>

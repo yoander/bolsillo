@@ -4,6 +4,7 @@
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <h2>{{ .action }} Invoice</h2>
         <form method="post" action="{{ if .inv }}{{ urlpath "SaveInvoice" (.inv.ID|printf "%d") }}{{ else }}{{ urlpath "SaveInvoice" "0" }}{{end}}">
             <!--<input id="id" type="hidden" name="ID" value="0">-->
@@ -27,15 +28,34 @@
                     </div>
                      <div class="form-group">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons" id="type">
-                        <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
-                            <input type="radio" id="status-paid" name="Status" autocomplete="off" value="PAID" {{with .inv -}}{{ if eq .Status "PAID" }}checked="checked"{{ end }}{{- end}}><span class="text-success"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Paid</span>
-                        </label>
-                        <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
-                            <input type="radio" id="status-pending" name="Status" autocomplete="off" value="PNDG" {{with .inv -}}{{ if eq .Status "PNDG" }}checked="checked"{{ end }}{{- end}}><span class="text-warning"><i class="fa fa-hourglass-half" aria-hidden="true"></i> Pending</span>
-                        </label>
-                        <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
-                            <input type="radio" id="status-canceled" name="Status" autocomplete="off" value="CANC" {{with .inv -}}{{ if eq .Status "CANC" }}checked="checked"{{ end }}{{- end}}><span class="text-danger"><i class="fa fa-ban" aria-hidden="true"></i> Canceled</span>
-                        </label>
+                            <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-paid" 
+                                    name="Status" 
+                                    autocomplete="off" value="PAID"
+                                    {{with .inv -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}>
+                                        <span class="text-success" data-feather="check" aria-hidden="true"></span> Paid
+                            </label>
+                            <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-pending" 
+                                    name="Status" 
+                                    autocomplete="off" 
+                                    value="PNDG"
+                                    {{with .inv -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}>
+                                        <span class="text-warning" data-feather="clock" aria-hidden="true"></span> Pending
+                            </label>
+                            <label class="btn btn-sm btn-light{{with .inv -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-canceled" 
+                                    name="Status" autocomplete="off" 
+                                    value="CANC"
+                                    {{with .inv -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}>
+                                        <span class="text-danger" data-feather="x" aria-hidden="true"></span> Canceled
+                            </label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -43,12 +63,19 @@
                         <textarea class="form-control" id="note" name="Note" rows="2">{{ with .inv }}{{ .Note }}{{ end }}</textarea>
                     </div>
                     <div class="form-group">
-                        <button type="submit" class="btn btn-info"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                        <button type="submit" class="btn btn-success"><i class="fa fa-hdd-o" aria-hidden="true"></i> Save & Insert</button>
+                        <div class="btn-group mr-2">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary" href="{{urlpath "EditTransaction" "0"}}">
+                                <span class="text-primary" data-feather="save"></span> Save
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <span class="text-success" data-feather="plus"></span> Save & Insert
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </form>
+    </main>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
      <script src="{{ asset "js/datepicker.js" }}"></script>

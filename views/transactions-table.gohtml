@@ -2,69 +2,72 @@
 <table id="transactions" class="table table-responsive table-striped table-sm">
   <thead>
     <tr>
-      <th style="width:5%">#</th>
-      <th style="width:31%">Description</th>
-      <th style="width:5%">Type</th>
-      <th style="width:5%">Status</th>
-      <th style="width:6%">U. Price </th>
-      <th style="width:10%">
-        <div>T. Price</div>
-        <div class="info text-secondary">{{ .incomes }} - {{ .expenses }}</div>
-        <hr style="margin:0"/>
-        <div class="info text-secondary">{{ .profit }}</div></td>
+      <th>#</th>
+      <th>Description</th>
+      <th>Type</th>
+      <th>U. Price </th>
+      <th>
+        <table class="table-sm price">
+          <tr><td rowspan="4">Price</td></tr>
+          <tr><td><span class="info text-secondary">{{ .incomes }} - {{ .expenses }}</span></td></tr>
+          <tr><td><hr style="margin:0"/></td></tr>
+          <tr><td><span class="info text-secondary">{{ .profit }}</span></td></tr>
+        </table>
       </th>
-      <th style="width:6%">Date</th>
+      <th>Date</th>
       <!--<th>Note</th>-->
-      <th style="width:24%">Tags</th>
-      <th style="width:10%">
-        <a 
-          class="btn btn-success my-2 my-sm-0 float-right" 
-          href="{{urlpath "EditTransaction" "0"}}" 
-          role="button">
-            <i class="fa fa-file-text" aria-hidden="true"></i> New
-        </a>
-      </th>
+      <th>Tags</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
       {{ range $i, $_ := .transactions }}
       <tr>
-        <td style="width:5%">{{ inc $i 1 }}</td>
-        <td style="width:31%">
+        <td>{{ inc $i 1 }}</td>
+        <td>
           <div>{{ .Description }}</div>
           {{ with .Note }}
           <div class="info text-secondary">{{ . }}</div>
           {{ end }}
         </td>
-        <td style="width:5%">
-          {{ if eq .Type "EXP" }}
-            <a class="badge badge-pill badge-danger" href="#"><i class="fa fa-hand-o-down" aria-hidden="true"></i></a>
-          {{ else }}
-            <a class="badge badge-pill badge-success" href="#"><i class="fa fa-hand-o-up" aria-hidden="true"></i></a>
-          {{ end }}
+        <td>
+          <div class="btn-group mr-2">
+            {{ if eq .Type "EXP" }}
+              <a role="button" class="btn text-danger" href="#"><span data-feather="thumbs-down" aria-hidden="true"></span></a>
+            {{ else }}
+              <a role="button" class="btn text-success" href="#"><span data-feather="thumbs-up" aria-hidden="true"></span></a>
+            {{ end }}
+            {{ if eq .Status "PAID" }}
+              <a role="button" class="btn text-success" href="#" data-toggle="tooltip" data-placement="center" title="Paid">
+                <span data-feather="check" aria-hidden="true"></span>
+              </a>
+            {{ else if eq .Status "PNDG" }}
+              <a role="button" class="btn text-warning" href="#" data-toggle="tooltip" data-placement="center" title="Pending">
+                <span data-feather="clock" aria-hidden="true"></sapn>
+              </a>
+            {{ else if eq .Status "CANC" }}
+              <a role="button" class="btn text-danger" href="#" data-toggle="tooltip" data-placement="center" title="Cancelled">
+                <span data-feather="x" aria-hidden="true"></span>
+              </a>
+            {{ end }}
+          </div>
         </td>
-        <td style="width:5%">
-          {{ if eq .Status "PAID" }}<a class="tag badge badge-pill badge-success" href="#" data-toggle="tooltip" data-placement="bottom" title="Paid"><i class="fa fa-check-circle-o" aria-hidden="true"></i></a>
-          {{ else if eq .Status "PNDG" }}<a class="tag badge badge-pill badge-warning" href="#" data-toggle="tooltip" data-placement="bottom" title="Pending"><i class="fa fa-hourglass-half" aria-hidden="true"></i></a>
-          {{ else if eq .Status "CANC" }}<a class="tag badge badge-pill badge-danger" href="#" data-toggle="tooltip" data-placement="bottom" title="Cancelled"><i class="fa fa-ban" aria-hidden="true"></i></a>
-          {{ end }}
-        </td>
-        <td style="width:6%">{{ .Price }}{{ with .R.Unit }}/{{ .Symbol }}{{ end }}</td>
-        <td style="width:10%">{{ .TotalPrice }}</td>
-        <td style="width:6%">{{ date .Date "02.01.2006" }}</td>
-        <td style="width:24%">
+        <td>{{ .Price }}{{ with .R.Unit }}/{{ .Symbol }}{{ end }}</td>
+        <td>{{ .TotalPrice }}</td>
+        <td>{{ date .Date "02.01.2006" }}</td>
+        <td>
           {{ range .R.Tags }}
-            <a class="tag badge badge-light" href="#"><i class="fa fa-tag" aria-hidden="true"></i> {{ .Tag }}</a> 
+            <a class="tag badge badge-light" href="#"><span data-feather="tag" aria-hidden="true"></span> {{ .Tag }}</a> 
           {{ end }}
           {{ if eq .IsExpensive 1 }}
             <a class="badge badge-pill badge-warning" href="#"><i class="fa fa-exclamation" aria-hidden="true"></i> Expensive</a>
           {{ end }}
         </td>
-        <td style="width:8%">
+        <td>
           <div class="btn-group float-right" role="group" aria-label="Action Buttons: Edit, Clone, Delete">
-            <a type="button" class="btn btn-sm btn-warning" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-            <a type="button" class="btn btn-sm btn-info" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="fa fa-clone" aria-hidden="true"></i></a>
-            <a type="button" class="btn btn-sm btn-danger" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "EditTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Edit transaction"><i class="text-warning" data-feather="edit" aria-hidden="true"></i></a>
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "CloneTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Clone transaction"><i class="text-primary" data-feather="copy"></i></a>
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "DeleteTransaction" (.ID|printf "%d") }}" data-toggle="tooltip" data-placement="bottom" title="Delete transaction"><i class="text-danger" data-feather="trash-2"></i></a>
           </div>
       </td>
       </tr>
@@ -74,11 +77,13 @@
       <td></td>
       <td></td>
       <td></td>
-      <td></td>
       <td>
-        <div class="info text-secondary">{{ .incomes }} - {{ .expenses }}</div>
-        <hr style="margin:0"/>
-        <div class="info text-secondary">{{ .profit }}</div></td>
+       <table class="table-sm price">
+          <tr><td rowspan="4">Price</td></tr>
+          <tr><td><span class="info text-secondary">{{ .incomes }} - {{ .expenses }}</span></td></tr>
+          <tr><td><hr style="margin:0"/></td></tr>
+          <tr><td><span class="info text-secondary">{{ .profit }}</span></td></tr>
+        </table>
       <td></td>
       <td></td>
       <td></td>

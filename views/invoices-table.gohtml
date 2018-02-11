@@ -1,0 +1,52 @@
+<table id="invoices" class="table table-responsive table-responsive-lg table-striped table-sm">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Code</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Note</th>
+            <th>Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {{ range $i, $_ := .Invoices }}
+        <tr>
+            <td>{{ inc $i 1 }}</td>
+            <td>{{ .Code }}</td>
+            <td>{{ date .Date "02.01.2006" }}
+            <td>
+                {{ if eq .Status "PAID" }}
+                    <a role="button" class="btn text-success" href="#" data-toggle="tooltip" data-placement="center" title="Paid">
+                        <span data-feather="check" aria-hidden="true"></span>
+                    </a>
+                {{ else if eq .Status "PNDG" }}
+                    <a role="button" class="btn text-warning" href="#" data-toggle="tooltip" data-placement="center" title="Pending">
+                        <span data-feather="clock" aria-hidden="true"></sapn>
+                    </a>
+                {{ else if eq .Status "CANC" }}
+                    <a role="button" class="btn text-danger" href="#" data-toggle="tooltip" data-placement="center" title="Cancelled">
+                        <span data-feather="x" aria-hidden="true"></span>
+                    </a>
+                {{ end }}
+            </td>
+            <td>{{ .Note }}</td>
+            <td>{{ .Price.Value }}</td>
+            <td>
+            <div class="btn-group float-right" role="group" aria-label="Basic example">
+                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "EditInvoice" (.ID|printf "%d") }}">
+                    <span class="text-warning" data-feather="edit" aria-hidden="true"></span>
+                </a>
+                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "CloneInvoice" (.ID|printf "%d") }}">
+                    <span class="text-primary" data-feather="copy" aria-hidden="true"></span>
+                </a>
+                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "DeleteInvoice" (.ID|printf "%d") }}">
+                    <span class="text-danger" data-feather="trash-2" aria-hidden="true"></span>
+                </a>
+            </div>
+            </td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>

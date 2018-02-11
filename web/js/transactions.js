@@ -21,6 +21,7 @@ $(document).ready(function () {
                 faIcon.removeClass('fa-spinner fa-spin fa-fw')
                     .addClass('fa-filter');
                 filter.prop('disabled', false);
+                feather.replace();
             }
         });
     }) ;

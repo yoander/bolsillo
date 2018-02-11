@@ -1,10 +1,38 @@
 table#transactions thead th:nth-child(1),
 table#transactions thead th:nth-child(3),
 table#transactions thead th:nth-child(4),
-table#transactions thead th:nth-child(6),
+table#transactions thead th:nth-child(5),
 table#transactions tbody td:nth-child(1),
 table#transactions tbody td:nth-child(3),
 table#transactions tbody td:nth-child(4),
-table#transactions tbody td:nth-child(6) {
+table#transactions tbody td:nth-child(5) {
   text-align: center;
 }
+
+table#transactions th:nth-child(1),
+table#transactions td { width: 5%; }
+
+table#transactions th:nth-child(2),
+table#transactions td:nth-child(2) { width: 35%; }
+
+table#transactions th:nth-child(3),
+table#transactions td:nth-child(3) { width: 5%; }
+
+table#transactions th:nth-child(4),
+table#transactions td:nth-child(4) { width: 5%; }
+
+table#transactions th:nth-child(5),
+table#transactions td:nth-child(5) { width: 12%; }
+
+table#transactions th:nth-child(6),
+table#transactions td:nth-child(6) { width: 5%; }
+
+table#transactions th:nth-child(7),
+table#transactions td:nth-child(7) { width: 25%; }
+
+table#transactions th:nth-child(8),
+table#transactions td:nth-child(8) { width: 8%; }
+
+table#transactions table.price { width: 100%; }
+table#transactions table.price tr:nth-child(3) { background: none; }
+table#transactions table.price td { border: none; }
