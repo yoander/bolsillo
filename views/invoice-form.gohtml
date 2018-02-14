@@ -4,7 +4,6 @@
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <h2>{{ .action }} Invoice</h2>
         <form method="post" action="{{ if .inv }}{{ urlpath "SaveInvoice" (.inv.ID|printf "%d") }}{{ else }}{{ urlpath "SaveInvoice" "0" }}{{end}}">
             <!--<input id="id" type="hidden" name="ID" value="0">-->
@@ -75,7 +74,6 @@
                 </div>
             </div>
         </form>
-    </main>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
      <script src="{{ asset "js/datepicker.js" }}"></script>

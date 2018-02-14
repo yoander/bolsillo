@@ -7,7 +7,6 @@
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
-       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <h2>{{ .action }} Transaction</h2>
         <form method="post" action="{{ if .tx }}{{ urlpath "SaveTransaction" (.tx.ID|printf "%d") }}{{ else}}{{ urlpath "SaveTransaction" "0" }}{{end}}">
             <div class="form-row">
@@ -53,34 +52,34 @@
                     </div>
                     <div class="form-group">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons" id="type">
-                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
-                            <input 
-                                type="radio" 
-                                id="status-paid" 
-                                name="Status" 
-                                autocomplete="off" value="PAID"
-                                {{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}>
-                                    <span class="text-success" data-feather="check" aria-hidden="true"></span> Paid
-                        </label>
-                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
-                            <input 
-                                type="radio" 
-                                id="status-pending" 
-                                name="Status" 
-                                autocomplete="off" 
-                                value="PNDG"
-                                {{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}>
-                                    <span class="text-warning" data-feather="clock" aria-hidden="true"></span> Pending
-                        </label>
-                        <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
-                            <input 
-                                type="radio" 
-                                id="status-canceled" 
-                                name="Status" autocomplete="off" 
-                                value="CANC"
-                                {{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}>
-                                    <span class="text-danger" data-feather="x" aria-hidden="true"></span> Canceled
-                        </label>
+                            <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PAID" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-paid" 
+                                    name="Status" 
+                                    autocomplete="off" value="PAID"
+                                    {{with .tx -}}{{ if eq .Status "PAID" }} checked{{ end }}{{- end}}>
+                                        <span class="text-success" data-feather="check" aria-hidden="true"></span> Paid
+                            </label>
+                            <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "PNDG" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-pending" 
+                                    name="Status" 
+                                    autocomplete="off" 
+                                    value="PNDG"
+                                    {{with .tx -}}{{ if eq .Status "PNDG" }} checked{{ end }}{{- end}}>
+                                        <span class="text-warning" data-feather="clock" aria-hidden="true"></span> Pending
+                            </label>
+                            <label class="btn btn-sm btn-light{{with .tx -}}{{ if eq .Status "CANC" }} active{{ end }}{{- end}}">
+                                <input 
+                                    type="radio" 
+                                    id="status-canceled" 
+                                    name="Status" autocomplete="off" 
+                                    value="CANC"
+                                    {{with .tx -}}{{ if eq .Status "CANC" }} checked{{ end }}{{- end}}>
+                                        <span class="text-danger" data-feather="x" aria-hidden="true"></span> Canceled
+                            </label>
                         </div>
                     </div>
                     <div class="form-group">
@@ -161,7 +160,6 @@
                 </div>
             </div>
         </form>
-      </main>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "vendor/jquery-flexdatalist/jquery.flexdatalist.min.js" }}"></script>

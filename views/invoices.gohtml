@@ -5,12 +5,11 @@
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
-      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
           <h1 class="h2">Invoices</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-              <a class="btn btn-sm btn-outline-secondary" href="{{urlpath "EditInvoice" "0"}}"><span class="text-primary" data-feather="file" role="button"></span> New</a>
+              <a class="btn btn-sm btn-outline-secondary" href="{{urlpath "EditTransaction" "0"}}"><span class="text-primary" data-feather="file" role="button"></span> New</a>
               <button class="btn btn-sm btn-outline-secondary"><span class="text-danger" data-feather="x"></span> Delete</button>
             </div>
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -63,10 +62,8 @@
             {{ render "invoices-table.gohtml" }}
           </div>  
         </div>
-      </main>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "js/datepicker.js" }}"></script>
-    <script src="{{ asset "js/invoices.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}
