@@ -20,7 +20,7 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/kataras/iris/sessions"
 	"github.com/yoander/bolsillo/controllers"
-	"github.com/yoander/bolsillo/tpl"
+	"github.com/yoander/bolsillo/views"
 )
 
 func error500(ctx context.Context, msg string, header string) {
@@ -78,11 +78,11 @@ func main() {
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	tpl.ReverseRouter = rv
-	tpl.Ngx = iris.HTML("./views", ".gohtml"). /*.Layout("layout.gohtml")*/ Reload(true) // reload templates on each request (development mode)
-	tpl.AddFuncs()
+	views.ReverseRouter = rv
+	views.Ngx = iris.HTML("./views", ".gohtml"). /*.Layout("layout.gohtml")*/ Reload(true) // reload templates on each request (development mode)
+	views.AddFuncs()
 
-	app.RegisterView(tpl.Ngx)
+	app.RegisterView(views.Ngx)
 
 	// Register static content
 	app.StaticWeb("/assets", "./web")
