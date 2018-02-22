@@ -9,7 +9,7 @@
           <h1 class="h2">Invoices</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-              <a class="btn btn-sm btn-outline-secondary" href="{{urlpath "EditTransaction" "0"}}"><span class="text-primary" data-feather="file" role="button"></span> New</a>
+              <a class="btn btn-sm btn-outline-secondary" href="{{urlpath "EditInvoice" "0"}}"><span class="text-primary" data-feather="file" role="button"></span> New</a>
               <button class="btn btn-sm btn-outline-secondary"><span class="text-danger" data-feather="x"></span> Delete</button>
             </div>
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -20,47 +20,47 @@
         </div>
         <form class="form-inline pb-2">
           <label class="sr-only" for="startDate">Start Date</label>
-          <input 
-            type="text" 
-            class="form-control form-control-sm mb-2 mr-sm-2 col-1 datepicker" 
-            data-language="en" 
-            data-date-format="d.m.Y" 
-            id="startDate" 
+          <input
+            type="text"
+            class="form-control form-control-sm mb-2 mr-sm-2 col-1 datepicker"
+            data-language="en"
+            data-date-format="d.m.Y"
+            id="startDate"
             name="startDate"
-            value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}" 
+            value="{{ if .startDate }}{{ .startDate }}{{ else }}01.{{ date now "01.2006" }}{{ end }}"
             readonly>
           <label class="sr-only" for="endDate">End Date</label>
-          <input 
-            type="text" 
-            class="form-control form-control-sm mb-2 mr-sm-2 col-1 datepicker" 
-            data-language="en" 
+          <input
+            type="text"
+            class="form-control form-control-sm mb-2 mr-sm-2 col-1 datepicker"
+            data-language="en"
             data-date-format="d.m.Y"
-            id="endDate" 
-            name="endDate" 
-            value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}" 
+            id="endDate"
+            name="endDate"
+            value="{{ if .endDate }}{{ .endDate }}{{ else }}{{ date now "02.01.2006" }}{{ end }}"
             readonly>
           <label class="sr-only" for="description">Description</label>
-          <input 
-              type="text" 
-              class="form-control form-control-sm mb-2 mr-sm-2" 
-              id="description" 
-              name="keyword" 
-              placeholder="Description" 
+          <input
+              type="text"
+              class="form-control form-control-sm mb-2 mr-sm-2"
+              id="description"
+              name="keyword"
+              placeholder="Description"
               value="{{ .keyword }}">
-          <button 
+          <button
             type="submit"
-            id="filter" 
+            id="filter"
             data-url="{{ urlpath "ListTransactions" }}"
             class="btn btn-sm btn-outline-dark mb-2 trigger"
             onclick="javascript:return false;">
               <span class="text-success" aria-hidden="true" data-feather="filter"></span> Filter
           </button>
         </form>
-       
+
         <div class="table-responsive">
           <div id="invTable">
             {{ render "invoices-table.gohtml" }}
-          </div>  
+          </div>
         </div>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
