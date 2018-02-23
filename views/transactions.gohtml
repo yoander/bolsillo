@@ -62,13 +62,13 @@
         </form>
        
         <div class="table-responsive">
-          <div id="transTable">
+          <div id="items">
             {{ render "transactions-table.gohtml" }}
           </div>  
         </div>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "js/datepicker.js" }}"></script>
-    <script src="{{ asset "js/transactions.js" }}"></script>
+    <script src="{{ asset "js/data-filter.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}

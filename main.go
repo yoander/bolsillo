@@ -37,16 +37,15 @@ func main() {
 	controllers.ReverseRouter = rv
 	// Open handle to database like normal
 	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
-	controllers.DB = db
-	// Optionally set the writer as well. Defaults to os.Stdout
-	//fh, err := os.Create("debug.txt")
-	//boil.DebugWriter = fh
-
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	sess := sessions.New(sessions.Config{Cookie: "TransactionFilter"})
+	controllers.DB = db
+	boil.SetLocation(time.Local)
+	boil.DebugMode = true
+	// Optionally set the writer as well. Defaults to os.Stdout
+	//fh, err := os.Create("debug.txt")
+	//boil.DebugWriter = fh
 
 	/*simpleDebug := func() string {
 		_, fileName, fileLine, ok := runtime.Caller(1)
@@ -59,7 +58,54 @@ func main() {
 		return s
 	}*/
 
-	boil.DebugMode = true
+	filterSess := sessions.New(sessions.Config{Cookie: "filter"})
+	parseFilterParams := func(ctx context.Context, sessionPrefix string) (time.Time, time.Time, string, error) {
+		now := time.Now().Local()
+		s := filterSess.Start(ctx)
+		var startDate, endDate time.Time
+		var err error
+		strStartDate := ctx.FormValue("startDate")
+		if strStartDate != "" {
+			s.Set(sessionPrefix+"_start_date", strStartDate)
+		} else {
+			strStartDate = s.GetString(sessionPrefix + "_start_date")
+		}
+
+		strEndDate := ctx.FormValue("endDate")
+		if strEndDate != "" {
+			s.Set(sessionPrefix+"_end_date", strEndDate)
+		} else {
+			strEndDate = s.GetString(sessionPrefix + "_end_date")
+		}
+
+		keyword := ctx.FormValue("keyword")
+		if ctx.IsAjax() {
+			s.Set(sessionPrefix+"_keyword", keyword)
+		} else {
+			keyword = s.GetString(sessionPrefix + "_keyword")
+		}
+
+		ctx.ViewData("startDate", strStartDate)
+		ctx.ViewData("endDate", strEndDate)
+		ctx.ViewData("keyword", keyword)
+
+		if strStartDate == "" {
+			startDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
+		} else if startDate, err = time.Parse("02.01.2006", strStartDate); err != nil {
+			return now, now, "", err
+		}
+
+		if strEndDate == "" {
+			endDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
+		} else if endDate, err = time.Parse("02.01.2006", strEndDate); err != nil {
+			return startDate, now, "", err
+		}
+
+		endDate = time.Date(endDate.Year(), endDate.Month(), endDate.Day(), 23, 59, 59, 99999999999, time.UTC)
+
+		return startDate, endDate, keyword, err
+	}
+
 	app.OnErrorCode(iris.StatusInternalServerError, func(ctx context.Context) {
 		ctx.ViewData("Title", "Error!!!")
 		ctx.ViewData("header", ctx.Values().GetString("header"))
@@ -72,8 +118,6 @@ func main() {
 
 		ctx.View("error.gohtml")
 	})
-
-	boil.SetLocation(time.Local)
 
 	app.Use(recover.New())
 	app.Use(logger.New())
@@ -104,7 +148,26 @@ func main() {
 	// =================== Invoices ======================
 	//
 	// List
-	app.Get("/invoices", controllers.Invoices.List).Name = "ListInvoices"
+	app.Get("/invoices", func(ctx context.Context) {
+		if startDate, endDate, keyword, err := parseFilterParams(ctx, "invoices"); err == nil {
+			if invoicePrices, err := controllers.
+				Invoices.
+				List(startDate, endDate, keyword); err == nil {
+				ctx.ViewData("Invoices", invoicePrices)
+			} else {
+				error500(ctx, err.Error(), "Error listing invoices!!!")
+			}
+		} else {
+			error500(ctx, err.Error(), "Error listing invoices!!!")
+		}
+		ctx.ViewData("Title", "Invoices")
+		if ctx.IsAjax() {
+			ctx.ViewLayout(view.NoLayout)
+			ctx.View("invoices-table.gohtml")
+		} else {
+			ctx.View("invoices.gohtml")
+		}
+	}).Name = "ListInvoices"
 
 	// Edit
 	app.Get("/invoice/edit/{id:string}", controllers.Invoices.Read).Name = "EditInvoice"
@@ -121,54 +184,19 @@ func main() {
 	//
 	// =================== Transactions ======================
 	//
-	// List of transactions
+	// List
 	app.Get("/transactions", func(ctx context.Context) {
-		s := sess.Start(ctx)
-
-		startDate := ctx.FormValue("startDate")
-		if startDate != "" {
-			s.Set("startDate", startDate)
-		} else {
-			startDate = s.GetString("startDate")
-		}
-
-		endDate := ctx.FormValue("endDate")
-		if endDate != "" {
-			s.Set("endDate", endDate)
-		} else {
-			endDate = s.GetString("endDate")
-		}
-
-		keyword := ctx.FormValue("keyword")
-		if ctx.IsAjax() {
-			s.Set("keyword", keyword)
-		} else {
-			keyword = s.GetString("keyword")
-		}
-
-		ctx.ViewData("startDate", startDate)
-		ctx.ViewData("endDate", endDate)
-		ctx.ViewData("keyword", keyword)
-		ctx.ViewData("Title", "Transactions")
-
-		initDate, err := time.Parse("02.01.2006", startDate)
-		finDate, err := time.Parse("02.01.2006", endDate)
-
-		if err != nil {
-			now := time.Now().Local()
-			initDate = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
-			finDate = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-		} else {
-			finDate = time.Date(finDate.Year(), finDate.Month(), finDate.Day(), 23, 59, 59, 99999999999, time.UTC)
-		}
-
-		if transactions, expenses, incomes, profit, err := controllers.
-			Transactions.
-			GetFilteredTransactions(initDate, finDate, keyword); err == nil {
-			ctx.ViewData("transactions", transactions)
-			ctx.ViewData("expenses", expenses)
-			ctx.ViewData("incomes", incomes)
-			ctx.ViewData("profit", fmt.Sprintf("%.2f", profit))
+		if startDate, endDate, keyword, err := parseFilterParams(ctx, "transactions"); err == nil {
+			if transactions, expenses, incomes, profit, err := controllers.
+				Transactions.
+				List(startDate, endDate, keyword); err == nil {
+				ctx.ViewData("transactions", transactions)
+				ctx.ViewData("expenses", expenses)
+				ctx.ViewData("incomes", incomes)
+				ctx.ViewData("profit", fmt.Sprintf("%.2f", profit))
+			} else {
+				error500(ctx, err.Error(), "Error listing transactions!!!")
+			}
 		} else {
 			error500(ctx, err.Error(), "Error listing transactions!!!")
 		}

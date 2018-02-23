@@ -11,7 +11,10 @@ $(document).ready(function () {
                 $('.indicator').show();   
             },
             success: function(data) {
-                $('#transTable').html(data);
+                $('#items').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log("TEXT:", textStatus);        
             },
             complete: function () {
                 $('.indicator').hide();

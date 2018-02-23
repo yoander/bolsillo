@@ -56,7 +56,7 @@ func (*transaction) Read(ctx context.Context) {
 }
 
 // List transactions
-func (*transaction) GetFilteredTransactions(startDate time.Time,
+func (*transaction) List(startDate time.Time,
 	endDate time.Time,
 	keyword string) (models.TransactionSlice, float64, float64, float64, error) {
 	sqlBuilder := []q.QueryMod{}
@@ -199,16 +199,11 @@ func (*transaction) Save(ID uint,
 		for i, t := range tags {
 			tagSet[i] = t
 		}
-		//fmt.Println("saving tags", tagSet)
 		tagEntities, err := models.Tags(DB, q.Select("id"), q.WhereIn("tag IN ?", tagSet...)).All()
 		if err == nil {
 			err = tx.SetTags(DB, false, tagEntities...)
 		}
 	}
-
-	/*if err != nil {
-		fmt.Println("Error saving", tags, err)
-	}*/
 
 	return err
 }

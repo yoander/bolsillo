@@ -43,29 +43,24 @@ func (*invoice) Read(ctx context.Context) {
 }
 
 // List invoices
-func (*invoice) List(ctx context.Context) {
-	var invo []InvoicePrice
+func (*invoice) List(startDate time.Time,
+	endDate time.Time,
+	keyword string) ([]InvoicePrice, error) {
+	var invoicePrices []InvoicePrice
+
+	sql := "SELECT invoices.*, SUM(transactions.total_price) AS price" +
+		" FROM invoices LEFT JOIN transactions" +
+		" ON transactions.invoice_id = invoices.id AND transactions.deleted = 0" +
+		" WHERE invoices.deleted = 0"
+
+	sql += " GROUP BY invoices.id" +
+		" ORDER BY invoices.date DESC, invoices.id"
 	// Use query building
 	err := models.NewQuery(DB,
-		q.SQL("SELECT invoices.*, SUM(transactions.total_price) AS price"+
-			" FROM invoices LEFT JOIN transactions"+
-			" ON transactions.invoice_id = invoices.id AND transactions.deleted = 0"+
-			" WHERE invoices.deleted = 0"+
-			" GROUP BY invoices.id"+
-			" ORDER BY invoices.date DESC, invoices.id",
-		),
-	).Bind(&invo)
+		q.SQL(sql),
+	).Bind(&invoicePrices)
 
-	//fmt.Printf("%v", invo)
-
-	// Eager loading
-	//inv, err := models.Invoices(DB, q.Where("deleted = ?", 0), q.OrderBy("date DESC, id DESC")).All()
-	if err != nil {
-		error500(ctx, err.Error(), "Loading invoices")
-	}
-	ctx.ViewData("Title", "Invoices")
-	ctx.ViewData("Invoices", invo)
-	ctx.View("invoices.gohtml")
+	return invoicePrices, err
 }
 
 // Clone invoices

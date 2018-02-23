@@ -2,9 +2,13 @@
   {{ template "head" }}
     <link rel="stylesheet" href="{{ asset "vendor/flatpickr/dist/flatpickr.min.css" }}">
     <link rel="stylesheet" href="{{ asset "css/invoices.css" }}">
+    <link rel="stylesheet" href="{{ asset "css/spinner.css" }}">
   {{ template "end_head" }}
   {{ template "body" }}
     {{ template "content" . }}
+      <div class="indicator">
+        <div class="spinner"></div>
+      </div>
        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
           <h1 class="h2">Invoices</h1>
           <div class="btn-toolbar mb-2 mb-md-0">
@@ -50,7 +54,7 @@
           <button
             type="submit"
             id="filter"
-            data-url="{{ urlpath "ListTransactions" }}"
+            data-url="{{ urlpath "ListInvoices" }}"
             class="btn btn-sm btn-outline-dark mb-2 trigger"
             onclick="javascript:return false;">
               <span class="text-success" aria-hidden="true" data-feather="filter"></span> Filter
@@ -58,12 +62,13 @@
         </form>
 
         <div class="table-responsive">
-          <div id="invTable">
+          <div id="items">
             {{ render "invoices-table.gohtml" }}
           </div>
         </div>
     {{ template "end_content" }}
     <script src="{{ asset "vendor/flatpickr/dist/flatpickr.min.js" }}"></script>
     <script src="{{ asset "js/datepicker.js" }}"></script>
+    <script src="{{ asset "js/data-filter.js" }}"></script>
   {{ template "end_body" }}
 {{ template "end_html" }}
