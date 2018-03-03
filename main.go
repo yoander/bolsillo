@@ -36,7 +36,7 @@ func main() {
 	rv := router.NewRoutePathReverser(app)
 	controllers.ReverseRouter = rv
 	// Open handle to database like normal
-	db, err := sql.Open("mysql", "root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
+	db, err := sql.Open("mysql", "root:root@tcp(localhost:2483)/bolsillo?parseTime=true&loc=Local")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -295,6 +295,6 @@ func main() {
 	// =================== Units ======================
 	app.Get("units.json", controllers.Units.DumpAsJSON).Name = "UnitsJSON"
 
-	// http://localhost:8080
-	app.Run(iris.Addr(":8080"), iris.WithoutServerError(iris.ErrServerClosed))
+	// http://localhost:8081
+	app.Run(iris.Addr(":8081"), iris.WithoutServerError(iris.ErrServerClosed))
 }
