@@ -5,3 +5,7 @@ templates
 templates_test
 *.mwb.bak
 *.mwb.beforefix
+debug
+yarn.lock
+yarn-error.log
+db/bolsillo-data.sql
