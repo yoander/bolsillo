@@ -10,7 +10,7 @@ table#transactions tbody td:nth-child(5) {
 }
 
 table#transactions th:nth-child(1),
-table#transactions td { width: 5%; }
+table#transactions td:nth-child(1) { width: 5%; }
 
 table#transactions th:nth-child(2),
 table#transactions td:nth-child(2) { width: 35%; }

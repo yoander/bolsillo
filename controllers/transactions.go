@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -115,6 +114,18 @@ func (*transaction) List(startDate time.Time,
 	return transactions, expenses, incomes, incomes - expenses, err
 }
 
+// List transactions
+func (*transaction) GetByInvoiceID(invoiceID uint64) (models.TransactionSlice, error) {
+	sqlBuilder := []q.QueryMod{}
+	sqlBuilder = append(sqlBuilder, q.Select("id, description, type, status, price, total_price, date, note, unit_id"))
+	sqlBuilder = append(sqlBuilder, q.Where("deleted = ?", 0))
+	sqlBuilder = append(sqlBuilder, q.And("invoice_id IS NOT NULL AND invoice_id = ?", invoiceID))
+	sqlBuilder = append(sqlBuilder, q.OrderBy("date DESC, id DESC"))
+	sqlBuilder = append(sqlBuilder, q.Load("Tags", "Unit"))
+
+	return models.Transactions(DB, sqlBuilder...).All()
+}
+
 // Clone transactions
 func (*transaction) Clone(ctx context.Context) {
 	if ID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 64); err != nil {
@@ -187,13 +198,11 @@ func (*transaction) Save(ID uint,
 		err = tx.Insert(DB)
 	}
 	if err != nil {
-		fmt.Println("Error saving", invoiceID, err)
 		return err
 	}
 
-	//fmt.Println("tags in save", tags)
 	count := len(tags)
-	if count > 0 {
+	if (err != nil) && (count > 0) {
 		// See https://github.com/golang/go/wiki/InterfaceSlice
 		tagSet := make([]interface{}, count)
 		for i, t := range tags {

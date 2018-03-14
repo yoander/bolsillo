@@ -7,12 +7,16 @@
       <th>Type</th>
       <th>U. Price </th>
       <th>
+        {{ if and .incomes .expenses .profit }}
         <table class="table-sm price">
           <tr><td rowspan="4">Price</td></tr>
           <tr><td><span class="info text-secondary">{{ .incomes }} - {{ .expenses }}</span></td></tr>
           <tr><td><hr style="margin:0"/></td></tr>
           <tr><td><span class="info text-secondary">{{ .profit }}</span></td></tr>
         </table>
+        {{ else }}
+          Price
+        {{ end }}
       </th>
       <th>Date</th>
       <!--<th>Note</th>-->
@@ -72,6 +76,7 @@
       </td>
       </tr>
     {{ end }}
+    {{ if and .incomes .expenses .profit }}
     <tr>
       <td></td>
       <td></td>
@@ -84,9 +89,11 @@
           <tr><td><hr style="margin:0"/></td></tr>
           <tr><td><span class="info text-secondary">{{ .profit }}</span></td></tr>
         </table>
+      </td>
       <td></td>
       <td></td>
       <td></td>
     </tr>
+    {{ end }}
   </tbody>
 </table>

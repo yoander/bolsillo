@@ -1,29 +1,55 @@
 table thead th:nth-child(1),
-table thead th:nth-child(4),
+table thead th:nth-child(2),
 table thead th:nth-child(6),
-table tbody td:nth-child(1),
-table tbody td:nth-child(4),
-table tbody td:nth-child(6) {
+table thead th:nth-child(6),
+table tbody td:nth-child(1):not('.transactions'),
+table tbody td:nth-child(2),
+table tbody td:nth-child(6),
+table tbody td:nth-child(8) {
   text-align: center;
 }
 
 table th:nth-child(1),
-table td { width: 5%; }
+table td:nth-child(1) { width: 2%; }
 
 table th:nth-child(2),
-table td:nth-child(2) { width: 15%; }
+table td:nth-child(2) { width: 3%; }
 
 table th:nth-child(3),
-table td:nth-child(3) { width: 10%; }
+table td:nth-child(3) { width: 15%; }
 
 table th:nth-child(4),
 table td:nth-child(4) { width: 10%; }
 
 table th:nth-child(5),
-table td:nth-child(5) { width: 40%; }
+table td:nth-child(5) { width: 10%; }
 
 table th:nth-child(6),
-table td:nth-child(6) { width: 10%; }
+table td:nth-child(6) { width: 40%; }
 
 table th:nth-child(7),
 table td:nth-child(7) { width: 10%; }
+
+table th:nth-child(8),
+table td:nth-child(8) { width: 10%; }
+
+.loader {
+  position: absolute;
+}
+
+/*
+  Set the color of the icon
+*/
+.loader svg path,
+.loader svg rect {
+  fill: #FF6700;
+}
+
+.table .table th {
+  border-top: none;
+}
+
+.table .table, .table-striped table tr:nth-of-type(odd) {
+  background-color: inherit;
+  font-size: 0.8rem;
+}

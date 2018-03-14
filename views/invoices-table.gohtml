@@ -1,6 +1,7 @@
 <table id="invoices" class="table table-responsive table-responsive-lg table-striped table-sm">
     <thead>
         <tr>
+            <th></th>
             <th>#</th>
             <th>Code</th>
             <th>Date</th>
@@ -11,10 +12,16 @@
         </tr>
     </thead>
     <tbody>
-        {{ range $i, $_ := .Invoices }}
-        <tr>
+    {{ range $i, $_ := .Invoices }}
+        {{ $var := .ID|printf "%d" }}
+        <tr id="invoice-{{ $var }}">
+            <td>
+                <a id="{{ $var }}" class="btn btn-link load-transactions" href="#" data-url="{{ urlpath "TransactionsByInvoice" $var }}">
+	                <span class="text-danger" data-feather="plus-square" aria-hidden="true"></span>
+                </a>
+            </td>
             <td>{{ inc $i 1 }}</td>
-            <td>{{ .Code }}</td>
+            <td><a href="{{ urlpath "TransactionsByInvoice" $var }}">{{ .Code }}</a></td>
             <td>{{ date .Date "02.01.2006" }}
             <td>
                 {{ if eq .Status "PAID" }}
@@ -34,19 +41,19 @@
             <td>{{ .Note }}</td>
             <td>{{ .Price.Value }}</td>
             <td>
-            <div class="btn-group float-right" role="group" aria-label="Basic example">
-                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "EditInvoice" (.ID|printf "%d") }}">
-                    <span class="text-warning" data-feather="edit" aria-hidden="true"></span>
-                </a>
-                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "CloneInvoice" (.ID|printf "%d") }}">
-                    <span class="text-primary" data-feather="copy" aria-hidden="true"></span>
-                </a>
-                <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "DeleteInvoice" (.ID|printf "%d") }}">
-                    <span class="text-danger" data-feather="trash-2" aria-hidden="true"></span>
-                </a>
-            </div>
+                <div class="btn-group float-right" role="group" aria-label="Basic example">
+                    <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "EditInvoice" $var }}">
+                        <span class="text-warning" data-feather="edit" aria-hidden="true"></span>
+                    </a>
+                    <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "CloneInvoice" $var }}">
+                        <span class="text-primary" data-feather="copy" aria-hidden="true"></span>
+                    </a>
+                    <a type="button" class="btn btn-sm btn-outline-secondary" href="{{ urlpath "DeleteInvoice" $var }}">
+                        <span class="text-danger" data-feather="trash-2" aria-hidden="true"></span>
+                    </a>
+                </div>
             </td>
         </tr>
-        {{ end }}
+    {{ end }}
     </tbody>
 </table>

@@ -265,15 +265,33 @@ func main() {
 		//fmt.Println("tags", strings.Split(ctx.PostValue("tags"), ","))
 		if err != nil {
 			error500(ctx, err.Error(), f("Error saving transactions %d", id))
+		} else {
+			ctx.Redirect(rv.Path("ListTransactions"))
 		}
-
-		ctx.Redirect(rv.Path("ListTransactions"))
-
 	}).Name = "SaveTransaction"
 
 	// Delete one transaction
 	app.Get("/transaction/delete/{id:string}", controllers.Transactions.SoftDelete).Name = "DeleteTransaction"
 
+	// Filter transactions by invoice id
+	app.Get("/invoice/{id:string}/transactions", func(ctx context.Context) {
+		if invoiceID, err := strconv.ParseUint(ctx.Params().Get("id"), 10, 8); err == nil {
+			if transactions, err := controllers.Transactions.GetByInvoiceID(invoiceID); err == nil {
+				ctx.ViewData("transactions", transactions)
+			} else {
+				error500(ctx, err.Error(), f("Error listing transactions for invoice %d", invoiceID))
+			}
+		} else {
+			error500(ctx, err.Error(), f("Error listing transactions for invoice %d", invoiceID))
+		}
+
+		if ctx.IsAjax() {
+			ctx.ViewLayout(view.NoLayout)
+			ctx.View("transactions-table.gohtml")
+		} else {
+			ctx.View("transactions.gohtml")
+		}
+	}).Name = "TransactionsByInvoice"
 	//
 	// =================== Tags ======================
 	//
