@@ -16,7 +16,7 @@
         {{ $var := .ID|printf "%d" }}
         <tr id="invoice-{{ $var }}">
             <td>
-                <a id="{{ $var }}" class="btn btn-link transactions-loader" href="#" data-url="{{ urlpath "TransactionsByInvoice" $var }}">
+                <a id="{{ $var }}" class="btn btn-link transactions-loader more" href="#" data-url="{{ urlpath "TransactionsByInvoice" $var }}">
 	                <span class="text-danger" data-feather="plus-square" aria-hidden="true"></span>
                 </a>
             </td>

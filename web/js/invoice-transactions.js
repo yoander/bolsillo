@@ -55,10 +55,11 @@
                 if ($(`tr#${rowId}-transactions`).length == 0) {
                     $(rowHTML).insertAfter(`#${rowId}`);
                     //$('tr#' + rowId + '-transactions td:eq(1)').prepend(loader);
+                } else {
+                    $(`tr#${rowId}-transactions td:eq(1)`).children('.loader').show();
                 }
             },
             success: function(data) {
-                $('a#' + id).html('<span class="text-danger" data-feather="minus-square" aria-hidden="true"></span>');
                 //var pos = $(`tr#${rowId}-transactions td:eq(0) svg`).position();
                 var td = $(`tr#${rowId}-transactions td:eq(1)`);
                 var loader = td.children('.loader').clone();
@@ -70,8 +71,8 @@
             },
             complete: function () {
                 $(`tr#${rowId}-transactions td:eq(1)`).children('.loader').hide();
-                feather.replace();
                 $(`tr#${rowId}-transactions td:eq(0) a`).rebind();
+                feather.replace();
             }
         });
     
@@ -82,7 +83,22 @@
 
 $(document).ready(function () {
     $('.transactions-loader').click(function() {
-        $(this).loadTransactions();
+        var id = $(this).attr('id');
+        var transactionsRowId = `#invoice-${id}-transactions`;
+        if ($(transactionsRowId).length == 0) {
+            $(this).loadTransactions();
+            $(this).removeClass('more').addClass('less');
+            $('a#' + id).html('<span class="text-danger" data-feather="minus-square" aria-hidden="true"></span>');
+        } else if ($(this).hasClass('less')) {
+            $(transactionsRowId).hide()
+            $(this).removeClass('less').addClass('more');
+            $('a#' + id).html('<span class="text-danger" data-feather="plus-square" aria-hidden="true"></span>');
+        } else if ($(this).hasClass('more')) {
+            $(transactionsRowId).show()
+            $(this).removeClass('more').addClass('less');
+            $('a#' + id).html('<span class="text-danger" data-feather="minus-square" aria-hidden="true"></span>');
+        }
+        feather.replace();
         return false;
     });
 });
