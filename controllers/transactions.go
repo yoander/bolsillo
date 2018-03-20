@@ -197,12 +197,10 @@ func (*transaction) Save(ID uint,
 	} else {
 		err = tx.Insert(DB)
 	}
-	if err != nil {
-		return err
-	}
 
 	count := len(tags)
-	if (err != nil) && (count > 0) {
+
+	if (err == nil) && (count > 0) {
 		// See https://github.com/golang/go/wiki/InterfaceSlice
 		tagSet := make([]interface{}, count)
 		for i, t := range tags {
